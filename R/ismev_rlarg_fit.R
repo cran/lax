@@ -1,9 +1,9 @@
-# ============================== ismev::gev.fit ============================= #
+# ============================= ismev::rlarg.fit ============================ #
 
-# Methods for class ismev_gev
+# Methods for class ismev_rlarg
 
 #' @export
-logLikVec.ismev_gev <- function(object, pars = NULL, ...) {
+logLikVec.ismev_rlarg <- function(object, pars = NULL, ...) {
   if (!missing(...)) {
     warning("extra arguments discarded")
   }
@@ -15,7 +15,7 @@ logLikVec.ismev_gev <- function(object, pars = NULL, ...) {
   n_pars <- length(pars)
   #
   if (object$trans & is.null(object$xdat)) {
-    stop("Covariate data needed.  Refit the model using lax::gev_refit")
+    stop("Covariate data needed.  Refit the model using lax::rlarg_refit")
   }
   if (!object$trans) {
     response_data <- object$data
@@ -44,10 +44,21 @@ logLikVec.ismev_gev <- function(object, pars = NULL, ...) {
   if (any(sigma <= 0)) {
     val <- -Inf
   } else {
-    val <- revdbayes::dgev(response_data, loc = mu, scale = sigma,
-                           shape = xi, log = TRUE)
+    rlarg_loglik_vec <- function(x, mu, sigma, xi) {
+      logg <- apply(x, 2, revdbayes::dgev, loc = mu, scale = sigma,
+                    shape = xi, log = TRUE)
+      logG <- apply(x, 2, revdbayes::pgev, loc = mu, scale = sigma,
+                    shape = xi, log.p = TRUE)
+      logGmin <- revdbayes::pgev(min_response, loc = mu, scale = sigma,
+                                 shape = xi, log.p = TRUE)
+      loglik <- logGmin + rowSums(logg - logG, na.rm = TRUE)
+      return(loglik)
+    }
+    min_response <- apply(response_data, 1, min, na.rm = TRUE)
+    val <- rlarg_loglik_vec(x = response_data, mu = mu, sigma = sigma, xi = xi)
   }
   # Return the usual attributes for a "logLik" object
+  attr(val, "names") <- NULL
   attr(val, "nobs") <- nobs(object)
   attr(val, "df") <- n_pars
   class(val) <- "logLikVec"
@@ -55,46 +66,27 @@ logLikVec.ismev_gev <- function(object, pars = NULL, ...) {
 }
 
 #' @export
-nobs.ismev_gev <- function(object, ...) {
-  return(length(object$data))
+nobs.ismev_rlarg <- function(object, ...) {
+  return(nrow(object$vals))
 }
 
 #' @export
-coef.ismev_gev <- function(object, ...) {
+coef.ismev_rlarg <- function(object, ...) {
   val <- object$mle
   names(val) <- ismev_gev_names(object)
   return(val)
 }
 
 #' @export
-vcov.ismev_gev <- function(object, ...) {
+vcov.ismev_rlarg <- function(object, ...) {
   vc <- object$cov
   dimnames(vc) <- list(ismev_gev_names(object), ismev_gev_names(object))
   return(vc)
 }
 
 #' @export
-logLik.ismev_gev <- function(object, ...) {
+logLik.ismev_rlarg <- function(object, ...) {
   return(logLik(logLikVec(object)))
 }
 
-ismev_gev_names <- function(x) {
-  if (x$trans) {
-    if (is.null(colnames(x$ydat))) {
-      loc_names <- paste0("loc", c("", x$model[[1]]))
-      scale_names <- paste0("scale", c("", x$model[[2]]))
-      shape_names <- paste0("shape", c("", x$model[[3]]))
-    } else {
-      cov_names <- colnames(x$ydat)
-      loc_names <- paste0("loc", c("", cov_names[x$model[[1]]]))
-      scale_names <- paste0("scale", c("", cov_names[x$model[[2]]]))
-      shape_names <- paste0("shape", c("", cov_names[x$model[[3]]]))
-    }
-    val <- c(loc_names, scale_names, shape_names)
-  } else {
-    val <- c("loc", "scale", "shape")
-  }
-  return(val)
-}
-
-# See ismev_methods.R for nobs, coef, vcov, logLik methods for class "gev.fit"
+# See ismev_methods.R for nobs, coef, vcov, logLik methods for class "rlarg.fit"

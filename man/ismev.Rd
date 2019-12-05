@@ -5,6 +5,7 @@
 \alias{alogLik.gev.fit}
 \alias{alogLik.pp.fit}
 \alias{alogLik.gpd.fit}
+\alias{alogLik.rlarg.fit}
 \title{Loglikelihood adjustment for ismev fits}
 \usage{
 \method{alogLik}{gev.fit}(x, cluster = NULL, use_vcov = TRUE, ...)
@@ -12,6 +13,8 @@
 \method{alogLik}{pp.fit}(x, cluster = NULL, use_vcov = TRUE, ...)
 
 \method{alogLik}{gpd.fit}(x, cluster = NULL, use_vcov = TRUE, ...)
+
+\method{alogLik}{rlarg.fit}(x, cluster = NULL, use_vcov = TRUE, ...)
 }
 \arguments{
 \item{x}{A fitted model object with certain associated S3 methods.
@@ -51,6 +54,8 @@ An object inheriting from class \code{"chandwich"}.  See
   (or \code{\link{gpd_refit}}) was used;
   \code{"pp"} \code{\link[ismev]{pp.fit}}
   (or \code{\link{pp_refit}}) was used;
+  \code{"rlarg"} \code{\link[ismev]{rlarg.fit}}
+  (or \code{\link{rlarg_refit}}) was used.
   The 5th component is
   \code{"stat"} if \code{x$trans = FALSE} and
   \code{"nonstat"} if \code{x$trans = TRUE}.
@@ -58,57 +63,21 @@ An object inheriting from class \code{"chandwich"}.  See
 \description{
 S3 \code{alogLik} method to perform loglikelihood adjustment for fitted
 extreme value model objects returned from the functions
-\code{\link[ismev]{gev.fit}}, \code{\link[ismev]{gpd.fit}}, and
-\code{\link[ismev]{pp.fit}} in the \code{\link[ismev]{ismev}}
-package.  If regression modelling is used then the model will need
-to be re-fitted, see \code{\link{ismev_refits}}.
+\code{\link[ismev]{gev.fit}}, \code{\link[ismev]{gpd.fit}},
+\code{\link[ismev]{pp.fit}} and \code{\link[ismev]{rlarg.fit}} in the
+\code{\link[ismev]{ismev}} package.  If regression modelling is used then
+the model will need to be re-fitted, see \code{\link{ismev_refits}}.
 }
 \details{
-Object \code{x} \emph{must} have the following S3
-  methods:
-  \itemize{
-    \item{\code{logLikVec: }}{returns a vector of the contributions to the
-      independence loglikelihood from individual observations;}
-    \item{\code{coef: }}{returns a vector of model coefficients, see
-      \code{\link[stats]{coef}};}
-    \item{\code{nobs: }}{returns the number of (non-missing) observations
-      used in a model fit, see \code{\link[stats]{nobs}}};
-  }
-  and \emph{may} have the following S3 methods
-  \itemize{
-    \item{\code{vcov: }}{returns the estimated variance-covariance matrix of
-      the (main) parameters of a fitted model, see
-      \code{\link[stats]{vcov}};}
-    \item{\code{estfun: }}{returns an \eqn{n x k} matrix, in which each
-      column gives the derivative of the loglikelihood at each of \eqn{n}
-      observation with respect to the \eqn{k} parameters of the model, see
-      \code{\link[sandwich]{estfun}}.}
-  }
-  Loglikelihood adjustment is performed using the
-  \code{\link[chandwich]{adjust_loglik}} function in the
-  \code{\link[chandwich]{chandwich}} package.
-  The relevant arguments to \code{\link[chandwich]{adjust_loglik}}, namely
-  \code{loglik, mle, H} and \code{V}, are created based on the class of
-  the object \code{x}.
+See \code{\link{alogLik}} for details.
 
-  If a \code{vcov} method is not available, or if \code{use_vcov = FALSE},
-  then the variance-covariance matrix of the MLE (from which \code{H} is
-  calculated) is estimated inside \code{\link[chandwich]{adjust_loglik}}
-  using \code{\link[stats:optim]{optimHess}}.
-
-  The \code{sandwich} package is used to estimate the variance matrix
-  \code{V} of the score vector: \code{\link[sandwich]{meat}} is used if
-  \code{cluster = NULL}; \code{\link[sandwich:vcovCL]{meatCL}} is used if
-  \code{cluster} is not \code{NULL}.
-  If \code{cluster} is \code{NULL} then any arguments of
-  \code{\link[sandwich:vcovCL]{meatCL}} present in \dots will be ignored.
-  Similarly, if \code{cluster} is not \code{NULL} then any arguments of
-  \code{\link[sandwich]{meat}} present in \dots will be ignored.
-  \code{\link[sandwich]{meat}} and \code{\link[sandwich:vcovCL]{meatCL}}
-  require an \code{\link[sandwich]{estfun}} method to be available, which,
-  in the current context, provides matrix of score contributions.
-  If a bespoke \code{estfun} method is not provided then this is constructed
-  by estimating the score contributions using \code{\link[numDeriv]{jacobian}}.
+If regression modelling is used then the ismev functions
+\code{\link[ismev]{gev.fit}}, \code{\link[ismev]{gpd.fit}},
+\code{\link[ismev]{pp.fit}} and \code{\link[ismev]{rlarg.fit}}
+return residuals but \code{\link{alogLik}} needs the raw data.
+The model will need to be re-fitted, using one of the functions in
+\code{\link{ismev_refits}}, and the user will be prompted to do this
+by an error message produced by \code{\link{alogLik}}.
 }
 \examples{
 # We need the ismev package
@@ -116,6 +85,9 @@ got_ismev <- requireNamespace("ismev", quietly = TRUE)
 
 if (got_ismev) {
   library(ismev)
+
+  # GEV model -----
+
   # An example from the ismev::gev.fit documentation
   gev_fit <- gev.fit(revdbayes::portpirie, show = FALSE)
   adj_gev_fit <- alogLik(gev_fit)
@@ -130,7 +102,22 @@ if (got_ismev) {
   adj_gev_fit <- alogLik(gev_fit)
   summary(adj_gev_fit)
 
+  # An example from Chandler and Bate (2007)
+  gev_fit <- gev_refit(ow$temp, ow, mul = 4, sigl = 4, shl = 4,
+                       show = FALSE)
+  adj_gev_fit <- alogLik(gev_fit, cluster = ow$year)
+  summary(adj_gev_fit)
+  # Get closer to the values reported in Table 2 of Chandler and Bate (2007)
+  gev_fit <- gev_refit(ow$temp, ow, mul = 4, sigl = 4, shl = 4,
+                       show = FALSE, method = "BFGS")
+  # Call sandwich::meatCL() with cadjust = FALSE
+  adj_gev_fit <- alogLik(gev_fit, cluster = ow$year, cadjust = FALSE)
+  summary(adj_gev_fit)
+
+  # GP model -----
+
   # An example from the ismev::gpd.fit documentation
+  \donttest{
   data(rain)
   rain_fit <- gpd.fit(rain, 10, show = FALSE)
   adj_rain_fit <- alogLik(rain_fit)
@@ -141,6 +128,8 @@ if (got_ismev) {
                             show = FALSE)
   adj_reg_rain_fit <- alogLik(reg_rain_fit)
   summary(adj_reg_rain_fit)
+  }
+  # PP model -----
 
   # An example from the ismev::pp.fit documentation
   data(rain)
@@ -176,17 +165,25 @@ if (got_ismev) {
   adj_pp_fit <- alogLik(wooster.pp)
   summary(adj_pp_fit)
 
-  # An example from Chandler and Bate (2007)
-  gev_fit <- gev_refit(ow$temp, ow, mul = 4, sigl = 4, shl = 4,
-                       show = FALSE)
-  adj_gev_fit <- alogLik(gev_fit, cluster = ow$year)
-  summary(adj_gev_fit)
-  # Get closer to the values reported in Table 2 of Chandler and Bate (2007)
-  gev_fit <- gev_refit(ow$temp, ow, mul = 4, sigl = 4, shl = 4,
-                       show = FALSE, method = "BFGS")
-  # Call sandwich::meatCL() with cadjust = FALSE
-  adj_gev_fit <- alogLik(gev_fit, cluster = ow$year, cadjust = FALSE)
-  summary(adj_gev_fit)
+  # r-largest order statistics model -----
+
+  # An example based on the ismev::rlarg.fit() documentation
+  vdata <- revdbayes::venice
+  rfit <- rlarg.fit(vdata, muinit = 120.54, siginit = 12.78,
+                    shinit = -0.1129, show = FALSE)
+  adj_rfit <- alogLik(rfit)
+  summary(adj_rfit)
+
+  \donttest{
+  # Adapt this example to add a covariate
+  set.seed(30102019)
+  ydat <- matrix(runif(nrow(vdata)), nrow(vdata), 1)
+  rfit2 <- rlarg_refit(vdata, ydat = ydat, mul = 1,
+                       muinit = c(120.54, 0), siginit = 12.78,
+                       shinit = -0.1129, show = FALSE)
+  adj_rfit2 <- alogLik(rfit2)
+  summary(adj_rfit2)
+  }
 }
 }
 \references{

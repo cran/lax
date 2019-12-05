@@ -4,12 +4,21 @@
 #'
 #' S3 \code{alogLik} method to perform loglikelihood adjustment for fitted
 #' extreme value model objects returned from the functions
-#' \code{\link[ismev]{gev.fit}}, \code{\link[ismev]{gpd.fit}}, and
-#' \code{\link[ismev]{pp.fit}} in the \code{\link[ismev]{ismev}}
-#' package.  If regression modelling is used then the model will need
-#' to be re-fitted, see \code{\link{ismev_refits}}.
+#' \code{\link[ismev]{gev.fit}}, \code{\link[ismev]{gpd.fit}},
+#' \code{\link[ismev]{pp.fit}} and \code{\link[ismev]{rlarg.fit}} in the
+#' \code{\link[ismev]{ismev}} package.  If regression modelling is used then
+#' the model will need to be re-fitted, see \code{\link{ismev_refits}}.
 #'
-#' @inherit alogLik params details references
+#' @inherit alogLik params references
+#' @details See \code{\link{alogLik}} for details.
+#'
+#' If regression modelling is used then the ismev functions
+#' \code{\link[ismev]{gev.fit}}, \code{\link[ismev]{gpd.fit}},
+#' \code{\link[ismev]{pp.fit}} and \code{\link[ismev]{rlarg.fit}}
+#' return residuals but \code{\link{alogLik}} needs the raw data.
+#' The model will need to be re-fitted, using one of the functions in
+#' \code{\link{ismev_refits}}, and the user will be prompted to do this
+#' by an error message produced by \code{\link{alogLik}}.
 #' @return An object inheriting from class \code{"chandwich"}.  See
 #'   \code{\link[chandwich]{adjust_loglik}}.
 #'   \code{class(x)} is a vector of length 5. The first 3 components are
@@ -22,6 +31,8 @@
 #'   (or \code{\link{gpd_refit}}) was used;
 #'   \code{"pp"} \code{\link[ismev]{pp.fit}}
 #'   (or \code{\link{pp_refit}}) was used;
+#'   \code{"rlarg"} \code{\link[ismev]{rlarg.fit}}
+#'   (or \code{\link{rlarg_refit}}) was used.
 #'   The 5th component is
 #'   \code{"stat"} if \code{x$trans = FALSE} and
 #'   \code{"nonstat"} if \code{x$trans = TRUE}.
@@ -32,6 +43,9 @@
 #'
 #' if (got_ismev) {
 #'   library(ismev)
+#'
+#'   # GEV model -----
+#'
 #'   # An example from the ismev::gev.fit documentation
 #'   gev_fit <- gev.fit(revdbayes::portpirie, show = FALSE)
 #'   adj_gev_fit <- alogLik(gev_fit)
@@ -46,7 +60,22 @@
 #'   adj_gev_fit <- alogLik(gev_fit)
 #'   summary(adj_gev_fit)
 #'
+#'   # An example from Chandler and Bate (2007)
+#'   gev_fit <- gev_refit(ow$temp, ow, mul = 4, sigl = 4, shl = 4,
+#'                        show = FALSE)
+#'   adj_gev_fit <- alogLik(gev_fit, cluster = ow$year)
+#'   summary(adj_gev_fit)
+#'   # Get closer to the values reported in Table 2 of Chandler and Bate (2007)
+#'   gev_fit <- gev_refit(ow$temp, ow, mul = 4, sigl = 4, shl = 4,
+#'                        show = FALSE, method = "BFGS")
+#'   # Call sandwich::meatCL() with cadjust = FALSE
+#'   adj_gev_fit <- alogLik(gev_fit, cluster = ow$year, cadjust = FALSE)
+#'   summary(adj_gev_fit)
+#'
+#'   # GP model -----
+#'
 #'   # An example from the ismev::gpd.fit documentation
+#'   \donttest{
 #'   data(rain)
 #'   rain_fit <- gpd.fit(rain, 10, show = FALSE)
 #'   adj_rain_fit <- alogLik(rain_fit)
@@ -57,6 +86,8 @@
 #'                             show = FALSE)
 #'   adj_reg_rain_fit <- alogLik(reg_rain_fit)
 #'   summary(adj_reg_rain_fit)
+#'   }
+#'   # PP model -----
 #'
 #'   # An example from the ismev::pp.fit documentation
 #'   data(rain)
@@ -92,17 +123,25 @@
 #'   adj_pp_fit <- alogLik(wooster.pp)
 #'   summary(adj_pp_fit)
 #'
-#'   # An example from Chandler and Bate (2007)
-#'   gev_fit <- gev_refit(ow$temp, ow, mul = 4, sigl = 4, shl = 4,
-#'                        show = FALSE)
-#'   adj_gev_fit <- alogLik(gev_fit, cluster = ow$year)
-#'   summary(adj_gev_fit)
-#'   # Get closer to the values reported in Table 2 of Chandler and Bate (2007)
-#'   gev_fit <- gev_refit(ow$temp, ow, mul = 4, sigl = 4, shl = 4,
-#'                        show = FALSE, method = "BFGS")
-#'   # Call sandwich::meatCL() with cadjust = FALSE
-#'   adj_gev_fit <- alogLik(gev_fit, cluster = ow$year, cadjust = FALSE)
-#'   summary(adj_gev_fit)
+#'   # r-largest order statistics model -----
+#'
+#'   # An example based on the ismev::rlarg.fit() documentation
+#'   vdata <- revdbayes::venice
+#'   rfit <- rlarg.fit(vdata, muinit = 120.54, siginit = 12.78,
+#'                     shinit = -0.1129, show = FALSE)
+#'   adj_rfit <- alogLik(rfit)
+#'   summary(adj_rfit)
+#'
+#'   \donttest{
+#'   # Adapt this example to add a covariate
+#'   set.seed(30102019)
+#'   ydat <- matrix(runif(nrow(vdata)), nrow(vdata), 1)
+#'   rfit2 <- rlarg_refit(vdata, ydat = ydat, mul = 1,
+#'                        muinit = c(120.54, 0), siginit = 12.78,
+#'                        shinit = -0.1129, show = FALSE)
+#'   adj_rfit2 <- alogLik(rfit2)
+#'   summary(adj_rfit2)
+#'   }
 #' }
 #' @name ismev
 NULL
@@ -185,6 +224,33 @@ alogLik.gpd.fit <- function(x, cluster = NULL, use_vcov = TRUE, ...) {
     class(res) <- c("lax", "chandwich", "ismev", "gpd", "nonstat")
   } else {
     class(res) <- c("lax", "chandwich", "ismev", "gpd", "stat")
+  }
+  return(res)
+}
+
+#' @rdname ismev
+#' @export
+alogLik.rlarg.fit <- function(x, cluster = NULL, use_vcov = TRUE, ...) {
+  # List of ismev objects supported
+  supported_by_lax <- list(ismev_rlarg = "rlarg.fit")
+  # Does x have a supported class?
+  is_supported <- NULL
+  for (i in 1:length(supported_by_lax)) {
+    is_supported[i] <- identical(class(x), unlist(supported_by_lax[i],
+                                                  use.names = FALSE))
+  }
+  if (!any(is_supported)) {
+    stop(paste("x's class", deparse(class(x)), "is not supported"))
+  }
+  # Set the class
+  name_of_class <- names(supported_by_lax)[which(is_supported)]
+  class(x) <- name_of_class
+  # Call adj_object() to adjust the loglikelihood
+  res <- adj_object(x, cluster = cluster, use_vcov = use_vcov, ...)
+  if (x$trans) {
+    class(res) <- c("lax", "chandwich", "ismev", "rlarg", "nonstat")
+  } else {
+    class(res) <- c("lax", "chandwich", "ismev", "rlarg", "stat")
   }
   return(res)
 }

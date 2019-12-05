@@ -13,7 +13,7 @@
 
 <meta name="author" content="Paul Northrop" />
 
-<meta name="date" content="2019-08-24" />
+<meta name="date" content="2019-12-05" />
 
 <title>An overview of lax</title>
 
@@ -96,7 +96,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">An overview of lax</h1>
 <h4 class="author">Paul Northrop</h4>
-<h4 class="date">2019-08-24</h4>
+<h4 class="date">2019-12-05</h4>
 
 
 <div id="TOC">
@@ -112,12 +112,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#extremes">extRemes</a></li>
 <li><a href="#evir">evir</a></li>
 <li><a href="#fextremes">fExtremes</a></li>
+<li><a href="#mev">mev</a></li>
 <li><a href="#pot">POT</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 </div>
 
-<p>The <a href="https://CRAN.R-project.org/view=ExtremeValue">CRAN Task View on Extreme Value Analysis</a> provides information about R packages that perform various extreme value analyses. The <em>lax</em> package supplements the functionality of seven of these packages, namely <a href="https://cran.r-project.org/package=evd">evd</a> <span class="citation">(Stephenson 2002)</span>, <a href="https://cran.r-project.org/package=evir">evir</a> <span class="citation">(Pfaff and McNeil 2018)</span>, <a href="https://cran.r-project.org/package=extRemes">extRemes</a> <span class="citation">(Gilleland and Katz 2016)</span>, <a href="https://cran.r-project.org/package=fExtremes">fExtremes</a> <span class="citation">(Wuertz, Setz, and Yohan Chalabi 2017)</span>, <a href="https://cran.r-project.org/package=ismev">ismev</a> <span class="citation">(Heffernan and Stephenson 2018)</span>, <a href="https://cran.r-project.org/package=POT">POT</a> <span class="citation">(Ribatet and Dutang 2016)</span> and <a href="https://cran.r-project.org/package=texmex">texmex</a> <span class="citation">(Southworth, Heffernan, and Metcalfe 2017)</span>. Univariate extreme value models, including regression models, are supported.</p>
+<p>The <a href="https://CRAN.R-project.org/view=ExtremeValue">CRAN Task View on Extreme Value Analysis</a> provides information about R packages that perform various extreme value analyses. The <em>lax</em> package supplements the functionality of seven of these packages, namely <a href="https://cran.r-project.org/package=evd">evd</a> <span class="citation">(Stephenson 2002)</span>, <a href="https://cran.r-project.org/package=evir">evir</a> <span class="citation">(Pfaff and McNeil 2018)</span>, <a href="https://cran.r-project.org/package=extRemes">extRemes</a> <span class="citation">(Gilleland and Katz 2016)</span>, <a href="https://cran.r-project.org/package=fExtremes">fExtremes</a> <span class="citation">(Wuertz, Setz, and Yohan Chalabi 2017)</span>, <a href="https://cran.r-project.org/package=ismev">ismev</a> <span class="citation">(Heffernan and Stephenson 2018)</span>, <a href="https://cran.r-project.org/package=mev">mev</a> <span class="citation">(Belzile et al. 2019)</span>, <a href="https://cran.r-project.org/package=POT">POT</a> <span class="citation">(Ribatet and Dutang 2016)</span> and <a href="https://cran.r-project.org/package=texmex">texmex</a> <span class="citation">(Southworth, Heffernan, and Metcalfe 2017)</span>. Univariate extreme value models, including regression models, are supported.</p>
 <p>The <a href="https://cran.r-project.org/package=chandwich">chandwich</a> package is used to provide robust sandwich estimation of parameter covariance matrix and loglikelihood adjustment for models fitted by maximum likelihood estimation. This may be useful for cluster correlated data when interest lies in the parameters of the marginal distributions, or for performing inferences that are robust to certain types of model misspecification.</p>
 <p><em>lax</em> works in an object-oriented way, operating on R objects returned from functions in other packages that summarise the fit of an extreme value model. Loglikelihood adjustment and sandwich estimation is performed by an <code>alogLik</code> S3 method. We demonstrate this using the following running example, which involves fitting a Generalised Extreme Value (GEV) regression model. Firstly, we use the <em>ismev</em> package to produce the fitted GEV regression model object on which <code>alogLik</code> will operate, and illustrate what can be done with the objects returned from <code>alogLik</code>. We use the <em>ismev</em> package because it provides an example of a case where we need to refit the model in order to obtain the information that we need to perform adjusted inferences. Then we repeat the adjustment using five of the other six packages. The <em>POT</em> package specialises in Generalised Pareto (GP) modelling, for which we use a different example.</p>
 <div id="gev-regression-of-annual-maximum-temperatures" class="section level2">
@@ -226,7 +227,7 @@ adj_evm_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(evm_fi
 <div id="evd" class="section level2">
 <h2>evd</h2>
 <p>The <code>fgev()</code> function in <em>evd</em> fits GEV regression models, but it only allows covariate effects in the location parameter.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(evd)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(evd, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)
 fgev_fit &lt;-<span class="st"> </span><span class="kw">fgev</span>(ow<span class="op">$</span>temp, <span class="dt">nsloc =</span> ow[, <span class="st">&quot;loc&quot;</span>])
 adj_fgev_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(fgev_fit, <span class="dt">cluster =</span> ow<span class="op">$</span>year)
 <span class="kw">summary</span>(adj_fgev_fit)
@@ -238,18 +239,7 @@ adj_fgev_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(fgev_
 </div>
 <div id="extremes" class="section level2">
 <h2>extRemes</h2>
-<pre><code>#&gt; Registered S3 methods overwritten by 'extRemes':
-#&gt;   method            from  
-#&gt;   plot.declustered  texmex
-#&gt;   print.declustered texmex</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(extRemes)
-<span class="co">#&gt; Loading required package: Lmoments</span>
-<span class="co">#&gt; Loading required package: distillery</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'extRemes'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     qqnorm, qqplot</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(extRemes, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)
 fevd_fit &lt;-<span class="st"> </span><span class="kw">fevd</span>(temp, ow, <span class="dt">location.fun =</span> <span class="op">~</span><span class="st"> </span>ow<span class="op">$</span>loc, <span class="dt">scale.fun =</span> <span class="op">~</span><span class="st"> </span>ow<span class="op">$</span>loc,
                  <span class="dt">shape.fun =</span> <span class="op">~</span><span class="st"> </span>ow<span class="op">$</span>loc)
 adj_fevd_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(fevd_fit, <span class="dt">cluster =</span> ow<span class="op">$</span>year)
@@ -265,12 +255,7 @@ adj_fevd_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(fevd_
 <div id="evir" class="section level2">
 <h2>evir</h2>
 <p>The <code>gev()</code> function in <em>evir</em> only fits stationary GEV models.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(evir)
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'evir'</span>
-<span class="co">#&gt; The following object is masked from 'package:ggplot2':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     qplot</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(evir, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)
 gev_fit &lt;-<span class="st"> </span><span class="kw">gev</span>(ow<span class="op">$</span>temp)
 adj_gev_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(gev_fit)
 <span class="kw">summary</span>(adj_gev_fit)
@@ -282,11 +267,7 @@ adj_gev_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(gev_fi
 <div id="fextremes" class="section level2">
 <h2>fExtremes</h2>
 <p>The <code>gevFit()</code> function in <em>fExtremes</em> only fits stationary GEV models.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(fExtremes)
-<span class="co">#&gt; Loading required package: timeDate</span>
-<span class="co">#&gt; Loading required package: timeSeries</span>
-<span class="co">#&gt; Loading required package: fBasics</span>
-<span class="co">#&gt; Loading required package: fGarch</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(fExtremes, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)
 gevFit_fit &lt;-<span class="st"> </span><span class="kw">gevFit</span>(ow<span class="op">$</span>temp)
 adj_gevFit_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(gevFit_fit)
 <span class="kw">summary</span>(adj_gevFit_fit)
@@ -295,14 +276,22 @@ adj_gevFit_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(gev
 <span class="co">#&gt; mu   80.7900 0.39240 0.41290</span>
 <span class="co">#&gt; beta  4.3980 0.28170 0.25570</span></code></pre></div>
 </div>
+<div id="mev" class="section level2">
+<h2>mev</h2>
+<p>The <code>fit.gev()</code> function in <em>mev</em> only fits stationary GEV models.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(mev, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)
+gfit &lt;-<span class="st"> </span><span class="kw">fit.gev</span>(ow<span class="op">$</span>temp)
+adj_gfit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(gfit)
+<span class="kw">summary</span>(adj_gfit)
+<span class="co">#&gt;           MLE     SE adj. SE</span>
+<span class="co">#&gt; loc   80.7800 0.3924 0.41290</span>
+<span class="co">#&gt; scale  4.3980 0.2818 0.25580</span>
+<span class="co">#&gt; shape -0.1801 0.0605 0.05089</span></code></pre></div>
+</div>
 <div id="pot" class="section level2">
 <h2>POT</h2>
-<pre><code>#&gt; Registered S3 methods overwritten by 'POT':
-#&gt;   method      from
-#&gt;   print.bvpot evd 
-#&gt;   plot.bvpot  evd</code></pre>
 <p>Among other things, the <code>fitgpd()</code> function in the <em>POT</em> package can fit a GP distribution to threshold excesses using maximum likelihood estimation. We illustrate <code>alogLik</code> using an example from the <code>fitgpd</code> documentation. There is no cluster dependence here. However, there may be interest in using a sandwich estimator of covariance if we are concerned about model misspecification. In this case, where we simulate from the correct model, we expect the adjustment to make little difference, and so it proves.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(POT)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(POT, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)
 <span class="kw">set.seed</span>(<span class="dv">24082019</span>)
 x &lt;-<span class="st"> </span>POT<span class="op">::</span><span class="kw">rgpd</span>(<span class="dv">200</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="fl">0.25</span>)
 fit &lt;-<span class="st"> </span><span class="kw">fitgpd</span>(x, <span class="dv">1</span>, <span class="st">&quot;mle&quot;</span>)
@@ -318,6 +307,9 @@ adj_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(fit)
    MathJax.Hub.Config({  "HTML-CSS": { minScaleAdjust: 125, availableFonts: [] }  });
 </script>
 <div id="refs" class="references">
+<div id="ref-mev">
+<p>Belzile, L., J. L. Wadsworth, P. J. Northrop, S. D. Grimshaw, and R. Huser. 2019. <em>Mev: Multivariate Extreme Value Distributions</em>. <a href="https://github.com/lbelzile/mev/" class="uri">https://github.com/lbelzile/mev/</a>.</p>
+</div>
 <div id="ref-CB2007">
 <p>Chandler, R. E., and S. Bate. 2007. “Inference for Clustered Data Using the Independence Loglikelihood.” <em>Biometrika</em> 94 (1): 167–83. doi:<a href="https://doi.org/10.1093/biomet/asm015">10.1093/biomet/asm015</a>.</p>
 </div>
@@ -325,22 +317,22 @@ adj_fit &lt;-<span class="st"> </span><span class="kw">alogLik</span>(fit)
 <p>Gilleland, E., and R. W. Katz. 2016. “extRemes 2.0: An Extreme Value Analysis Package in R.” <em>Journal of Statistical Software</em> 72 (8): 1–39. doi:<a href="https://doi.org/10.18637/jss.v072.i08">10.18637/jss.v072.i08</a>.</p>
 </div>
 <div id="ref-ismev">
-<p>Heffernan, J. E., and A. G. Stephenson. 2018. <em>Ismev: An Introduction to Statistical Modeling of Extreme Values</em>. <a href="https://CRAN.R-project.org/package=ismev" class="uri">https://CRAN.R-project.org/package=ismev</a>.</p>
+<p>Heffernan, J. E., and A. G. Stephenson. 2018. <em>ismev: An Introduction to Statistical Modeling of Extreme Values</em>. <a href="https://CRAN.R-project.org/package=ismev" class="uri">https://CRAN.R-project.org/package=ismev</a>.</p>
 </div>
 <div id="ref-evir">
-<p>Pfaff, B., and A. McNeil. 2018. <em>Evir: Extreme Values in R</em>. <a href="https://CRAN.R-project.org/package=evir" class="uri">https://CRAN.R-project.org/package=evir</a>.</p>
+<p>Pfaff, B., and A. McNeil. 2018. <em>evir: Extreme Values in R</em>. <a href="https://CRAN.R-project.org/package=evir" class="uri">https://CRAN.R-project.org/package=evir</a>.</p>
 </div>
 <div id="ref-POT">
-<p>Ribatet, Mathieu, and Christophe Dutang. 2016. <em>POT: Generalized Pareto Distribution and Peaks over Threshold</em>. <a href="https://CRAN.R-project.org/package=POT" class="uri">https://CRAN.R-project.org/package=POT</a>.</p>
+<p>Ribatet, M., and C. Dutang. 2016. <em>POT: Generalized Pareto Distribution and Peaks over Threshold</em>. <a href="https://CRAN.R-project.org/package=POT" class="uri">https://CRAN.R-project.org/package=POT</a>.</p>
 </div>
 <div id="ref-texmex">
-<p>Southworth, H., J. E. Heffernan, and P. D. Metcalfe. 2017. <em>Texmex: Statistical Modelling of Extreme Values</em>.</p>
+<p>Southworth, H., J. E. Heffernan, and P. D. Metcalfe. 2017. <em>texmex: Statistical Modelling of Extreme Values</em>. <a href="https://CRAN.R-project.org/package=texmex" class="uri">https://CRAN.R-project.org/package=texmex</a>.</p>
 </div>
 <div id="ref-evd">
-<p>Stephenson, A. G. 2002. “Evd: Extreme Value Distributions.” <em>R News</em> 2 (2): 0. <a href="https://CRAN.R-project.org/doc/Rnews/" class="uri">https://CRAN.R-project.org/doc/Rnews/</a>.</p>
+<p>Stephenson, A. G. 2002. “evd: Extreme Value Distributions.” <em>R News</em> 2 (2): 0. <a href="https://CRAN.R-project.org/doc/Rnews/" class="uri">https://CRAN.R-project.org/doc/Rnews/</a>.</p>
 </div>
 <div id="ref-fExtremes">
-<p>Wuertz, D., T. Setz, and Y. Yohan Chalabi. 2017. <em>FExtremes: Rmetrics - Modelling Extreme Events in Finance</em>. <a href="https://CRAN.R-project.org/package=fExtremes" class="uri">https://CRAN.R-project.org/package=fExtremes</a>.</p>
+<p>Wuertz, D., T. Setz, and Y. Yohan Chalabi. 2017. <em>fExtremes: Rmetrics - Modelling Extreme Events in Finance</em>. <a href="https://CRAN.R-project.org/package=fExtremes" class="uri">https://CRAN.R-project.org/package=fExtremes</a>.</p>
 </div>
 </div>
 </div>
