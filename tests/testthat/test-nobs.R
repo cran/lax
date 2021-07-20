@@ -1,5 +1,3 @@
-context("nobs")
-
 # Check that nobs.evd behaves correctly
 
 if (requireNamespace("evd", quietly = TRUE)) {
@@ -36,7 +34,8 @@ if (requireNamespace("evd", quietly = TRUE)) {
   # evd::fextreme
   # An example from the evd::fextreme documentation
   uvdata <- evd::rextreme(100, qnorm, mean = 0.56, mlen = 365)
-  M3 <- evd::fextreme(uvdata, list(mean = 0, sd = 1), distn = "norm", mlen = 365)
+  M3 <- evd::fextreme(uvdata, list(mean = 0, sd = 1), distn = "norm",
+                      mlen = 365)
   test_that("evd::fextreme, nobs.evd() vs. length(response)", {
     testthat::expect_equivalent(nobs(M3), length(uvdata))
   })

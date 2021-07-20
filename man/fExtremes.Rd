@@ -68,18 +68,18 @@ if (got_fExtremes) {
   # GEV
   # An example from the fExtremes::gevFit documentation
   set.seed(4082019)
-  x <- gevSim(model = list(xi=0.25, mu=0, beta=1), n = 1000)
+  x <- fExtremes::gevSim(model = list(xi=0.25, mu=0, beta=1), n = 1000)
   # Fit GEV distribution by maximum likelihood estimation
-  fit <- gevFit(x)
+  fit <- fExtremes::gevFit(x)
   adj_fit <- alogLik(fit)
   summary(adj_fit)
 
   # GP
   # An example from the fExtremes::gpdFit documentation
   # Simulate GP data
-  x <- gpdSim(model = list(xi = 0.25, mu = 0, beta = 1), n = 1000)
+  x <- fExtremes::gpdSim(model = list(xi = 0.25, mu = 0, beta = 1), n = 1000)
   # Fit GP distribution by maximum likelihood estimation
-  fit <- gpdFit(x, u = min(x))
+  fit <- fExtremes::gpdFit(x, u = min(x))
   adj_fit <- alogLik(fit)
   summary(adj_fit)
 }
@@ -87,11 +87,11 @@ if (got_fExtremes) {
 \references{
 Chandler, R. E. and Bate, S. (2007). Inference for clustered
   data using the independence loglikelihood. \emph{Biometrika},
-  \strong{94}(1), 167-183. \url{http://doi.org/10.1093/biomet/asm015}
+  \strong{94}(1), 167-183. \doi{10.1093/biomet/asm015}
 
-Zeleis (2006) Object-Oriented Computation and Sandwich
+Zeileis (2006) Object-Oriented Computation and Sandwich
   Estimators.  \emph{Journal of Statistical Software}, \strong{16}, 1-16.
-  \url{http://doi.org/10.18637/jss.v016.i09}
+  \doi{10.18637/jss.v016.i09}
 }
 \seealso{
 \code{\link{alogLik}}: loglikelihood adjustment for model fits.

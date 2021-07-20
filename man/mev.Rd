@@ -86,9 +86,6 @@ if (got_mev) {
   set.seed(1112019)
   x <- revdbayes::rgp(365 * 10, loc = 0, scale = 1, shape = 0.1)
   pfit <- fit.pp(x, threshold = 1, npp = 365)
-  # (To do: delete the next two lines after new mev hits CRAN)
-  pfit$xdat <- x
-  pfit$npp <- 365
   adj_pfit <- alogLik(pfit)
   summary(adj_pfit)
 
@@ -115,11 +112,11 @@ if (got_mev) {
 \references{
 Chandler, R. E. and Bate, S. (2007). Inference for clustered
   data using the independence loglikelihood. \emph{Biometrika},
-  \strong{94}(1), 167-183. \url{http://doi.org/10.1093/biomet/asm015}
+  \strong{94}(1), 167-183. \doi{10.1093/biomet/asm015}
 
-Zeleis (2006) Object-Oriented Computation and Sandwich
+Zeileis (2006) Object-Oriented Computation and Sandwich
   Estimators.  \emph{Journal of Statistical Software}, \strong{16}, 1-16.
-  \url{http://doi.org/10.18637/jss.v016.i09}
+  \doi{10.18637/jss.v016.i09}
 }
 \seealso{
 \code{\link{alogLik}}: loglikelihood adjustment for model fits.

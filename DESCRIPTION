@@ -1,7 +1,7 @@
 Package: lax
 Title: Loglikelihood Adjustment for Extreme Value Models
-Version: 1.1.0
-Date: 2019-12-05
+Version: 1.2.0
+Date: 2021-07-20
 Authors@R: c(
     person(c("Paul", "J."), "Northrop", email = "p.northrop@ucl.ac.uk",
       role = c("aut", "cre", "cph")),
@@ -9,6 +9,7 @@ Authors@R: c(
     )
 Description: Performs adjusted inferences based on model objects fitted, using 
     maximum likelihood estimation, by the extreme value analysis packages
+    'eva' <https://cran.r-project.org/package=eva>, 
     'evd' <https://cran.r-project.org/package=evd>, 
     'evir' <https://cran.r-project.org/package=evir>, 
     'extRemes' <https://cran.r-project.org/package=extRemes>, 
@@ -33,17 +34,17 @@ License: GPL (>= 2)
 LazyData: TRUE
 Encoding: UTF-8
 Depends: R (>= 3.3.0)
-RoxygenNote: 7.0.1
-Suggests: distillery, evd, evir, extRemes, fExtremes, ismev, knitr,
-        mev, POT, rmarkdown, testthat, texmex
+RoxygenNote: 7.1.1
+Suggests: distillery, eva, evd, evir, extRemes, fExtremes, ismev,
+        knitr, mev, POT, rmarkdown, testthat, texmex
 VignetteBuilder: knitr
 URL: https://paulnorthrop.github.io/lax/,
-        http://github.com/paulnorthrop/lax
-BugReports: http://github.com/paulnorthrop/lax/issues
+        https://github.com/paulnorthrop/lax
+BugReports: https://github.com/paulnorthrop/lax/issues
 NeedsCompilation: no
-Packaged: 2019-12-05 19:27:30 UTC; paul
+Packaged: 2021-07-20 01:29:49 UTC; paul
 Author: Paul J. Northrop [aut, cre, cph],
   Camellia Yin [aut, cph]
 Maintainer: Paul J. Northrop <p.northrop@ucl.ac.uk>
 Repository: CRAN
-Date/Publication: 2019-12-05 20:10:02 UTC
+Date/Publication: 2021-07-20 05:00:02 UTC

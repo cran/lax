@@ -4,7 +4,8 @@
 \name{ow}
 \alias{ow}
 \title{Oxford and Worthing annual maximum temperatures}
-\format{A dataframe with 80 rows and 4 columns.
+\format{
+A dataframe with 80 rows and 4 columns.
   \itemize{
     \item{Column 1, \code{temp}: }{annual maximum temperatures in degrees
       Fahrenheit.}
@@ -12,7 +13,8 @@
     \item{Column 3, \code{name}: }{name of location, "oxford" or "worthing"}
     \item{Column 4, \code{loc}: }{location: 1 for "oxford", -1 for
       "worthing"}
- }}
+ }
+}
 \source{
 Tabony, R. C. (1983) Extreme value analysis in meteorology.
  \emph{The Meteorological Magazine}, \strong{112}, 77-98.
@@ -27,6 +29,6 @@ period 1901 to 1980.
 \references{
 Chandler, R. E. and Bate, S. (2007). Inference for clustered
   data using the independence loglikelihood. \emph{Biometrika},
-  \strong{94}(1), 167-183. \url{http://dx.doi.org/10.1093/biomet/asm015}
+  \strong{94}(1), 167-183. \doi{10.1093/biomet/asm015}
 }
 \keyword{datasets}

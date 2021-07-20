@@ -4,15 +4,14 @@
 #'
 #' \code{anova} method for objects of class \code{"lax"}.
 #' Compares two or more nested models using the adjusted likelihood ratio
-#' test statistic (ALRTS) described in Section 3.5 of
-#' \href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+#' test statistic (ALRTS) described in Section 3.5 of Chandler and Bate (2007).
 #' The nesting must result from the simple constraint that a subset of the
 #' parameters of the larger model is held fixed.
 #'
-#' @param object An object of class \code{"lax"}, returned by
-#'   \code{\link{alogLik}}.
-#' @param object2 An object of class \code{"chandwich"}, returned by
-#'   \code{\link{alogLik}}.
+#' @param object An object of class \code{"lax"}, inheriting from class
+#'   \code{"chandwich"}, returned by \code{\link{alogLik}}.
+#' @param object2 An object of class \code{"lax"}, inheriting from class
+#'   \code{"chandwich"}, returned by \code{\link{alogLik}}.
 #' @param ... Further objects of class \code{"lax"} and/or arguments
 #'   to be passed to \code{\link[chandwich]{anova.chandwich}}, and then on to
 #'   \code{\link[chandwich]{compare_models}}, in particular \code{type}, which
@@ -35,7 +34,7 @@
 #' @seealso \code{\link{alogLik}}: loglikelihood adjustment for model fits.
 #' @references Chandler, R. E. and Bate, S. (2007). Inference for clustered
 #'   data using the independence loglikelihood. \emph{Biometrika},
-#'   \strong{94}(1), 167-183. \url{http://doi.org/10.1093/biomet/asm015}
+#'   \strong{94}(1), 167-183. \doi{10.1093/biomet/asm015}
 #' @examples
 #' got_evd <- requireNamespace("evd", quietly = TRUE)
 #' if (got_evd) {
@@ -91,10 +90,10 @@ anova.lax <- function (object, object2, ...) {
   # Create list of model objects:  unnamed arguments may be model objects
   model_list <- c(list(object, object2), dotargs[!named])
   # Check for objects that do not have class "lax"
-  is_chand <- vapply(model_list, function(x) inherits(x, "lax"), NA)
-  if (any(!is_chand)) {
+  is_lax <- vapply(model_list, function(x) inherits(x, "lax"), NA)
+  if (any(!is_lax)) {
     stop("The following are not 'lax' objects: ",
-         paste(names(model_list)[!is_chand], collapse = ", "))
+         paste(names(model_list)[!is_lax], collapse = ", "))
   }
   extra_names <- as.list(substitute(list(...)))[-1][which_not_named]
   extra_names <- sapply(extra_names, function(x) deparse(x))

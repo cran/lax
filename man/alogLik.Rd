@@ -35,8 +35,8 @@ or \code{\link[sandwich:vcovCL]{meatCL}} (if \code{cluster} is not
 An object inheriting from class \code{"chandwich"}.  See
   \code{\link[chandwich]{adjust_loglik}}.
 
-  If \code{x} is one of the supported models then \code{class(x)} is a
-  vector of length 5. The first 3 components are
+  If \code{x} is one of the supported models then the class of the returned
+  object is a vector of length 5. The first 3 components are
   \code{c("lax", "chandwich", "name_of_package")}, where
   \code{"name_of_package"} is the name of the package from which the input
   object \code{x} originated.  The remaining 2 components depend on the
@@ -51,15 +51,15 @@ An object inheriting from class \code{"chandwich"}.  See
   \code{\link[lax]{POT}},
   \code{\link[lax]{texmex}}.
 
-  Otherwise, \code{class(x)} is \code{c("lax", "chandwich", class(x))}.
+  Otherwise, the class of the returned object is
+  \code{c("lax", "chandwich", class(x))}.
 
   Objects returned from `aloglik` have `anova`, `coef`, `confint`, `logLik`,
   `nobs`, `plot`, `print`, `summary` and `vcov` methods.
 }
 \description{
 This function is generic.  It performs adjustment of the loglikelihood
-associated with fitted model objects, following
-\href{http://doi.org/10.1093/biomet/asm015}{Chandler and Bate (2007)}.
+associated with fitted model objects, following Chandler and Bate (2007).
 Certain classes of extreme value model objects are supported automatically.
 For details see the \code{alogLik} help pages for the packages:
 \code{\link[lax]{evd}},
@@ -131,11 +131,11 @@ See the (package-specific) examples in \code{\link{evd}},
 \references{
 Chandler, R. E. and Bate, S. (2007). Inference for clustered
   data using the independence loglikelihood. \emph{Biometrika},
-  \strong{94}(1), 167-183. \url{http://doi.org/10.1093/biomet/asm015}
+  \strong{94}(1), 167-183. \doi{10.1093/biomet/asm015}
 
-Zeleis (2006) Object-Oriented Computation and Sandwich
+Zeileis (2006) Object-Oriented Computation and Sandwich
   Estimators.  \emph{Journal of Statistical Software}, \strong{16}, 1-16.
-  \url{http://doi.org/10.18637/jss.v016.i09}
+  \doi{10.18637/jss.v016.i09}
 }
 \seealso{
 \code{\link[chandwich]{summary.chandwich}},

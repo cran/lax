@@ -69,6 +69,21 @@ summary(adj_fevd_fit)
 ## ---- echo = FALSE, eval = got_extRemes---------------------------------------
 detach("package:extRemes")
 
+## ---- echo = FALSE, message = FALSE-------------------------------------------
+got_eva <- requireNamespace("eva", quietly = TRUE)
+
+## ---- eval = got_extRemes, message = FALSE, warning = FALSE-------------------
+library(eva, quietly = TRUE)
+gevr_fit <- gevrFit(ow$temp, information = "observed",
+                    locvars = ow, locform = ~ ow$loc, 
+                    scalevars = ow, scaleform = ~ ow$loc,
+                    shapevars = ow, shapeform = ~ ow$loc)
+adj_gevr_fit <- alogLik(gevr_fit, cluster = ow$year)
+summary(adj_gevr_fit)
+
+## ---- echo = FALSE, eval = got_eva--------------------------------------------
+detach("package:eva")
+
 ## ---- echo = FALSE------------------------------------------------------------
 got_evir <- requireNamespace("evir", quietly = TRUE)
 
