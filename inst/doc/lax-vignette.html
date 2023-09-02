@@ -12,11 +12,23 @@
 
 <meta name="author" content="Paul Northrop" />
 
-<meta name="date" content="2021-07-20" />
+<meta name="date" content="2023-09-02" />
 
 <title>An overview of lax</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -26,6 +38,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -109,13 +122,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -149,7 +169,187 @@ div.csl-indent {
 }
 </style>
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -163,12 +363,13 @@ div.csl-indent {
 
 <h1 class="title toc-ignore">An overview of lax</h1>
 <h4 class="author">Paul Northrop</h4>
-<h4 class="date">2021-07-20</h4>
+<h4 class="date">2023-09-02</h4>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#gev-regression-of-annual-maximum-temperatures">GEV regression of annual maximum temperatures</a></li>
+<li><a href="#gev-regression-of-annual-maximum-temperatures">GEV
+regression of annual maximum temperatures</a></li>
 <li><a href="#ismev">ismev</a>
 <ul>
 <li><a href="#confidence-intervals">Confidence intervals</a></li>
@@ -187,17 +388,62 @@ div.csl-indent {
 </ul>
 </div>
 
-<p>The <a href="https://CRAN.R-project.org/view=ExtremeValue">CRAN Task View on Extreme Value Analysis</a> provides information about R packages that perform various extreme value analyses. The <em>lax</em> package supplements the functionality of nine of these packages, namely <a href="https://cran.r-project.org/package=evd">eva</a> <span class="citation">(Bader and Yan 2020)</span>, <a href="https://cran.r-project.org/package=evd">evd</a> <span class="citation">(Stephenson 2002)</span>, <a href="https://cran.r-project.org/package=evir">evir</a> <span class="citation">(Pfaff and McNeil 2018)</span>, <a href="https://cran.r-project.org/package=extRemes">extRemes</a> <span class="citation">(Gilleland and Katz 2016)</span>, <a href="https://cran.r-project.org/package=fExtremes">fExtremes</a> <span class="citation">(Wuertz, Setz, and Yohan Chalabi 2017)</span>, <a href="https://cran.r-project.org/package=ismev">ismev</a> <span class="citation">(Heffernan and Stephenson 2018)</span>, <a href="https://cran.r-project.org/package=mev">mev</a> <span class="citation">(Belzile et al. 2019)</span>, <a href="https://cran.r-project.org/package=POT">POT</a> <span class="citation">(Ribatet and Dutang 2016)</span> and <a href="https://cran.r-project.org/package=texmex">texmex</a> <span class="citation">(Southworth, Heffernan, and Metcalfe 2017)</span>. Univariate extreme value models, including regression models, are supported.</p>
-<p>The <a href="https://cran.r-project.org/package=chandwich">chandwich</a> package is used to provide robust sandwich estimation of parameter covariance matrix and loglikelihood adjustment for models fitted by maximum likelihood estimation. This may be useful for cluster correlated data when interest lies in the parameters of the marginal distributions, or for performing inferences that are robust to certain types of model misspecification.</p>
-<p><em>lax</em> works in an object-oriented way, operating on R objects returned from functions in other packages that summarise the fit of an extreme value model. Loglikelihood adjustment and sandwich estimation is performed by an <code>alogLik</code> S3 method. We demonstrate this using the following running example, which involves fitting a Generalised Extreme Value (GEV) regression model. Firstly, we use the <em>ismev</em> package to produce the fitted GEV regression model object on which <code>alogLik</code> will operate, and illustrate what can be done with the objects returned from <code>alogLik</code>. We use the <em>ismev</em> package because it provides an example of a case where we need to refit the model in order to obtain the information that we need to perform adjusted inferences. Then we repeat the adjustment using seven of the other eight packages. The <em>POT</em> package specialises in Generalised Pareto (GP) modelling, for which we use a different example.</p>
+<p>The <a href="https://CRAN.R-project.org/view=ExtremeValue">CRAN Task
+View on Extreme Value Analysis</a> provides information about R packages
+that perform various extreme value analyses. The <em>lax</em> package
+supplements the functionality of nine of these packages, namely <a href="https://cran.r-project.org/package=evd">eva</a> <span class="citation">(Bader and Yan 2020)</span>, <a href="https://cran.r-project.org/package=evd">evd</a> <span class="citation">(Stephenson 2002)</span>, <a href="https://cran.r-project.org/package=evir">evir</a> <span class="citation">(Pfaff and McNeil 2018)</span>, <a href="https://cran.r-project.org/package=extRemes">extRemes</a> <span class="citation">(Gilleland and Katz 2016)</span>, <a href="https://cran.r-project.org/package=fExtremes">fExtremes</a> <span class="citation">(Wuertz, Setz, and Yohan Chalabi 2017)</span>, <a href="https://cran.r-project.org/package=ismev">ismev</a> <span class="citation">(Heffernan and Stephenson 2018)</span>, <a href="https://cran.r-project.org/package=mev">mev</a> <span class="citation">(Belzile et al. 2019)</span>, <a href="https://cran.r-project.org/package=POT">POT</a> <span class="citation">(Ribatet and Dutang 2016)</span> and <a href="https://cran.r-project.org/package=texmex">texmex</a> <span class="citation">(Southworth, Heffernan, and Metcalfe 2017)</span>.
+Univariate extreme value models, including regression models, are
+supported.</p>
+<p>The <a href="https://cran.r-project.org/package=chandwich">chandwich</a>
+package is used to provide robust sandwich estimation of parameter
+covariance matrix and loglikelihood adjustment for models fitted by
+maximum likelihood estimation. This may be useful for cluster correlated
+data when interest lies in the parameters of the marginal distributions,
+or for performing inferences that are robust to certain types of model
+misspecification.</p>
+<p><em>lax</em> works in an object-oriented way, operating on R objects
+returned from functions in other packages that summarise the fit of an
+extreme value model. Loglikelihood adjustment and sandwich estimation is
+performed by an <code>alogLik</code> S3 method. We demonstrate this
+using the following running example, which involves fitting a
+Generalised Extreme Value (GEV) regression model. Firstly, we use the
+<em>ismev</em> package to produce the fitted GEV regression model object
+on which <code>alogLik</code> will operate, and illustrate what can be
+done with the objects returned from <code>alogLik</code>. We use the
+<em>ismev</em> package because it provides an example of a case where we
+need to refit the model in order to obtain the information that we need
+to perform adjusted inferences. Then we repeat the adjustment using
+seven of the other eight packages. The <em>POT</em> package specialises
+in Generalised Pareto (GP) modelling, for which we use a different
+example.</p>
 <div id="gev-regression-of-annual-maximum-temperatures" class="section level2">
 <h2>GEV regression of annual maximum temperatures</h2>
-<p>This example is based on the analysis presented in Section 5.2 of <span class="citation">Chandler and Bate (2007)</span>. The data, which are available in the data frame <code>ow</code>, are a bivariate time series of annual maximum temperatures, recorded in degrees Fahrenheit, at Oxford and Worthing in England, for the period 1901 to 1980. If interest is only in the marginal distributions of high temperatures in Oxford and Worthing, then we might fit a GEV regression model in which some or all of the parameters may vary between Oxford and Worthing. However, we should adjust for the cluster dependence between temperatures recorded during the same year.</p>
+<p>This example is based on the analysis presented in Section 5.2 of
+<span class="citation">Chandler and Bate (2007)</span>. The data, which
+are available in the data frame <code>ow</code>, are a bivariate time
+series of annual maximum temperatures, recorded in degrees Fahrenheit,
+at Oxford and Worthing in England, for the period 1901 to 1980. If
+interest is only in the marginal distributions of high temperatures in
+Oxford and Worthing, then we might fit a GEV regression model in which
+some or all of the parameters may vary between Oxford and Worthing.
+However, we should adjust for the cluster dependence between
+temperatures recorded during the same year.</p>
 </div>
 <div id="ismev" class="section level2">
 <h2>ismev</h2>
-<p>The <code>gev.fit()</code> function in <em>ismev</em> fits GEV regression models. It allows covariate effects in any of the (location, scale and shape) parameters of the GEV distribution. However, an object returned from <code>gev.fit()</code> does not provide all the information about a fitted regression model that <code>alogLik</code> needs, in order to calculate loglikelihood contributions from individual observations: the design matrices are missing. Therefore, <em>lax</em> provides the function <code>gev_refit</code>, which is a version of <code>gev.fit</code> that adds this information.</p>
-<p>The following code fits a GEV regression model in which the location, scale and shape parameters of the GEV distribution vary between Oxford and Worthing. Then <code>alogLik</code> is used to provide adjusted standard errors and an adjusted loglikelihood.</p>
+<p>The <code>gev.fit()</code> function in <em>ismev</em> fits GEV
+regression models. It allows covariate effects in any of the (location,
+scale and shape) parameters of the GEV distribution. However, an object
+returned from <code>gev.fit()</code> does not provide all the
+information about a fitted regression model that <code>alogLik</code>
+needs, in order to calculate loglikelihood contributions from individual
+observations: the design matrices are missing. Therefore, <em>lax</em>
+provides the function <code>gev_refit</code>, which is a version of
+<code>gev.fit</code> that adds this information.</p>
+<p>The following code fits a GEV regression model in which the location,
+scale and shape parameters of the GEV distribution vary between Oxford
+and Worthing. Then <code>alogLik</code> is used to provide adjusted
+standard errors and an adjusted loglikelihood.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lax)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Column 4 of ow contains 1 for Oxford and -1 for Worthing</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>large <span class="ot">&lt;-</span> <span class="fu">gev_refit</span>(ow<span class="sc">$</span>temp, ow, <span class="at">mul =</span> <span class="dv">4</span>, <span class="at">sigl =</span> <span class="dv">4</span>, <span class="at">shl =</span> <span class="dv">4</span>, <span class="at">show =</span> <span class="cn">FALSE</span>,</span>
@@ -210,10 +456,21 @@ div.csl-indent {
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; MLE     81.1700 2.6690 3.7290   0.5312 -0.19890 -0.08835</span></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; SE       0.3282 0.3282 0.2292   0.2292  0.04937  0.04937</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; adj. SE  0.4036 0.2128 0.2425   0.1911  0.03944  0.03625</span></span></code></pre></div>
-<p>This reproduces the values in rows 1, 3 and 4 in Table 2 of <span class="citation">Chandler and Bate (2007)</span>. The estimation of the ‘meat’ of the sandwich adjustment is performed using the <a href="https://cran.r-project.org/package=sandwich">sandwich</a> package. In this example, we need to pass <code>cadjust = FALSE</code> to <code>sandwich::meatCL</code> in order that the adjustment is the same as that used in <span class="citation">Chandler and Bate (2007)</span>. Otherwise, <code>meatCL</code> makes a finite-cluster bias correction.</p>
+<p>This reproduces the values in rows 1, 3 and 4 in Table 2 of <span class="citation">Chandler and Bate (2007)</span>. The estimation of the
+‘meat’ of the sandwich adjustment is performed using the <a href="https://cran.r-project.org/package=sandwich">sandwich</a> package.
+In this example, we need to pass <code>cadjust = FALSE</code> to
+<code>sandwich::meatCL</code> in order that the adjustment is the same
+as that used in <span class="citation">Chandler and Bate (2007)</span>.
+Otherwise, <code>meatCL</code> makes a finite-cluster bias
+correction.</p>
 <div id="confidence-intervals" class="section level3">
 <h3>Confidence intervals</h3>
-<p>A <code>confint</code> method calculates approximate (95%) confidence intervals for the parameters, based on the adjusted loglikelihood. <span class="citation">Chandler and Bate (2007)</span> consider three types of loglikelihood adjustment: one vertical and two horizontal. The type of adjustment is selected by the argument <code>type</code>. The default is <code>type = &quot;vertical&quot;</code> and there is an option to perform no adjustment.</p>
+<p>A <code>confint</code> method calculates approximate (95%) confidence
+intervals for the parameters, based on the adjusted loglikelihood. <span class="citation">Chandler and Bate (2007)</span> consider three types of
+loglikelihood adjustment: one vertical and two horizontal. The type of
+adjustment is selected by the argument <code>type</code>. The default is
+<code>type = &quot;vertical&quot;</code> and there is an option to perform no
+adjustment.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(adj_large)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Waiting for profiling to be done...</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               2.5 %     97.5 %</span></span>
@@ -235,7 +492,11 @@ div.csl-indent {
 </div>
 <div id="confidence-regions" class="section level3">
 <h3>Confidence regions</h3>
-<p>The <code>conf_region</code> function in the <em>chandwich</em> package can be used to produce confidence regions for pairs of parameters. Here, we consider the ‘central’ (midway between Oxford and Worthing) scale and shape intercept parameters: <span class="math inline">\(\sigma_0\)</span> and <span class="math inline">\(\xi_0\)</span> in <span class="citation">Chandler and Bate (2007)</span>.</p>
+<p>The <code>conf_region</code> function in the <em>chandwich</em>
+package can be used to produce confidence regions for pairs of
+parameters. Here, we consider the ‘central’ (midway between Oxford and
+Worthing) scale and shape intercept parameters: <span class="math inline">\(\sigma_0\)</span> and <span class="math inline">\(\xi_0\)</span> in <span class="citation">Chandler
+and Bate (2007)</span>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(chandwich)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>which_pars <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;scale&quot;</span>, <span class="st">&quot;shape&quot;</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>gev_none <span class="ot">&lt;-</span> <span class="fu">conf_region</span>(adj_large, <span class="at">which_pars =</span> which_pars, <span class="at">type =</span> <span class="st">&quot;none&quot;</span>)</span>
@@ -244,11 +505,15 @@ div.csl-indent {
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Waiting for profiling to be done...</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(gev_none, gev_vertical, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="fl">3.1</span>, <span class="fl">4.5</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="sc">-</span><span class="fl">0.05</span>),</span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="fu">expression</span>(sigma[<span class="dv">0</span>]), <span class="at">ylab =</span> <span class="fu">expression</span>(xi[<span class="dv">0</span>]))</span></code></pre></div>
-<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
 </div>
 <div id="comparing-nested-models" class="section level3">
 <h3>Comparing nested models</h3>
-<p><code>alogLik</code> also has an <code>anova</code> method, which can be used to perform (adjusted) loglikelihood ratio tests of nested models. To illustrate this we fit, and adjust, a smaller model, in which Oxford and Worthing have a common GEV shape parameter, and then compare this model to the larger one.</p>
+<p><code>alogLik</code> also has an <code>anova</code> method, which can
+be used to perform (adjusted) loglikelihood ratio tests of nested
+models. To illustrate this we fit, and adjust, a smaller model, in which
+Oxford and Worthing have a common GEV shape parameter, and then compare
+this model to the larger one.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>small <span class="ot">&lt;-</span> <span class="fu">gev_refit</span>(ow<span class="sc">$</span>temp, ow, <span class="at">mul =</span> <span class="dv">4</span>, <span class="at">sigl =</span> <span class="dv">4</span>, <span class="at">show =</span> <span class="cn">FALSE</span>, </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">method =</span> <span class="st">&quot;BFGS&quot;</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>adj_small <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(small, <span class="at">cluster =</span> ow<span class="sc">$</span>year, <span class="at">cadjust =</span> <span class="cn">FALSE</span>)</span>
@@ -275,36 +540,38 @@ div.csl-indent {
 <span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; adj_small        5  1 3.1876     0.0742 .</span></span>
 <span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
 <span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
-<p>We see that the adjustment of the loglikelihood for clustering makes enough of a difference to matter: if we perform a test at the 5% significance level then we choose the larger model when we adjust but the smaller model if we do not.</p>
+<p>We see that the adjustment of the loglikelihood for clustering makes
+enough of a difference to matter: if we perform a test at the 5%
+significance level then we choose the larger model when we adjust but
+the smaller model if we do not.</p>
 </div>
 </div>
 <div id="texmex" class="section level2">
 <h2>texmex</h2>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(texmex, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: phi = log(scale)</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>evm_fit <span class="ot">&lt;-</span> <span class="fu">evm</span>(temp, ow, gev, <span class="at">mu =</span> <span class="sc">~</span> loc, <span class="at">phi =</span> <span class="sc">~</span> loc, <span class="at">xi =</span> <span class="sc">~</span>loc)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>adj_evm_fit <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(evm_fit, <span class="at">cluster =</span> ow<span class="sc">$</span>year)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_evm_fit)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       MLE      SE adj. SE</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mu: (Intercept)  81.17000 0.32820 0.40620</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mu: loc           2.66800 0.32820 0.21420</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; phi: (Intercept)  1.30600 0.06091 0.06531</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; phi: loc          0.14330 0.06091 0.05106</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi: (Intercept)  -0.19900 0.04937 0.03968</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi: loc          -0.08821 0.04937 0.03647</span></span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;texmex&#39; was built under R version 4.2.3</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning: package &#39;mvtnorm&#39; was built under R version 4.2.3</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: phi = log(scale)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>evm_fit <span class="ot">&lt;-</span> <span class="fu">evm</span>(temp, ow, gev, <span class="at">mu =</span> <span class="sc">~</span> loc, <span class="at">phi =</span> <span class="sc">~</span> loc, <span class="at">xi =</span> <span class="sc">~</span>loc)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>adj_evm_fit <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(evm_fit, <span class="at">cluster =</span> ow<span class="sc">$</span>year)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_evm_fit)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                       MLE      SE adj. SE</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mu: (Intercept)  81.17000 0.32820 0.40620</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mu: loc           2.66800 0.32820 0.21420</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; phi: (Intercept)  1.30600 0.06091 0.06531</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; phi: loc          0.14330 0.06091 0.05106</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi: (Intercept)  -0.19900 0.04937 0.03968</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi: loc          -0.08821 0.04937 0.03647</span></span></code></pre></div>
 </div>
 <div id="evd" class="section level2">
 <h2>evd</h2>
-<p>The <code>fgev()</code> function in <em>evd</em> fits GEV regression models, but it only allows covariate effects in the location parameter.</p>
+<p>The <code>fgev()</code> function in <em>evd</em> fits GEV regression
+models, but it only allows covariate effects in the location
+parameter.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(evd, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fgev_fit <span class="ot">&lt;-</span> <span class="fu">fgev</span>(ow<span class="sc">$</span>temp, <span class="at">nsloc =</span> ow[, <span class="st">&quot;loc&quot;</span>])</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>adj_fgev_fit <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(fgev_fit, <span class="at">cluster =</span> ow<span class="sc">$</span>year)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_fgev_fit)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              MLE      SE adj. SE</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; loc      81.1600 0.32980 0.40830</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; loctrend  2.5040 0.31080 0.19910</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; scale     3.7900 0.22810 0.25230</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; shape    -0.2097 0.04765 0.04063</span></span></code></pre></div>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_fgev_fit)</span></code></pre></div>
 </div>
 <div id="extremes" class="section level2">
 <h2>extRemes</h2>
@@ -340,43 +607,42 @@ div.csl-indent {
 </div>
 <div id="evir" class="section level2">
 <h2>evir</h2>
-<p>The <code>gev()</code> function in <em>evir</em> only fits stationary GEV models.</p>
+<p>The <code>gev()</code> function in <em>evir</em> only fits stationary
+GEV models.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(evir, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>gev_fit <span class="ot">&lt;-</span> <span class="fu">gev</span>(ow<span class="sc">$</span>temp)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>adj_gev_fit <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(gev_fit)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_gev_fit)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           MLE      SE adj. SE</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi    -0.1801 0.06051  0.0509</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sigma  4.3980 0.28180  0.2558</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mu    80.7800 0.39240  0.4128</span></span></code></pre></div>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_gev_fit)</span></code></pre></div>
 </div>
 <div id="fextremes" class="section level2">
 <h2>fExtremes</h2>
-<p>The <code>gevFit()</code> function in <em>fExtremes</em> only fits stationary GEV models.</p>
+<p>The <code>gevFit()</code> function in <em>fExtremes</em> only fits
+stationary GEV models.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fExtremes, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>gevFit_fit <span class="ot">&lt;-</span> <span class="fu">gevFit</span>(ow<span class="sc">$</span>temp)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>adj_gevFit_fit <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(gevFit_fit)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_gevFit_fit)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          MLE      SE adj. SE</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; xi   -0.1802 0.06047 0.05087</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; mu   80.7900 0.39240 0.41290</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; beta  4.3980 0.28170 0.25570</span></span></code></pre></div>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_gevFit_fit)</span></code></pre></div>
 </div>
 <div id="mev" class="section level2">
 <h2>mev</h2>
-<p>The <code>fit.gev()</code> function in <em>mev</em> only fits stationary GEV models.</p>
+<p>The <code>fit.gev()</code> function in <em>mev</em> only fits
+stationary GEV models.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mev, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>gfit <span class="ot">&lt;-</span> <span class="fu">fit.gev</span>(ow<span class="sc">$</span>temp)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>adj_gfit <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(gfit)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_gfit)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           MLE     SE adj. SE</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; loc   80.7800 0.3924 0.41290</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; scale  4.3980 0.2818 0.25580</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; shape -0.1801 0.0605 0.05089</span></span></code></pre></div>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(adj_gfit)</span></code></pre></div>
 </div>
 <div id="pot" class="section level2">
 <h2>POT</h2>
-<p>Among other things, the <code>fitgpd()</code> function in the <em>POT</em> package can fit a GP distribution to threshold excesses using maximum likelihood estimation. We illustrate <code>alogLik</code> using an example from the <code>fitgpd</code> documentation. There is no cluster dependence here. However, there may be interest in using a sandwich estimator of covariance if we are concerned about model misspecification. In this case, where we simulate from the correct model, we expect the adjustment to make little difference, and so it proves.</p>
+<p>Among other things, the <code>fitgpd()</code> function in the
+<em>POT</em> package can fit a GP distribution to threshold excesses
+using maximum likelihood estimation. We illustrate <code>alogLik</code>
+using an example from the <code>fitgpd</code> documentation. There is no
+cluster dependence here. However, there may be interest in using a
+sandwich estimator of covariance if we are concerned about model
+misspecification. In this case, where we simulate from the correct
+model, we expect the adjustment to make little difference, and so it
+proves.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(POT, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">24082019</span>)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> POT<span class="sc">::</span><span class="fu">rgpd</span>(<span class="dv">200</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="fl">0.25</span>)</span>
@@ -394,34 +660,47 @@ div.csl-indent {
 </script>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-eva" class="csl-entry">
-Bader, B., and J. Yan. 2020. <em>Eva: Extreme Value Analysis with Goodness-of-Fit Testing</em>. <a href="https://CRAN.R-project.org/package=eva">https://CRAN.R-project.org/package=eva</a>.
+Bader, B., and J. Yan. 2020. <em>Eva: Extreme Value Analysis with
+Goodness-of-Fit Testing</em>. <a href="https://CRAN.R-project.org/package=eva">https://CRAN.R-project.org/package=eva</a>.
 </div>
 <div id="ref-mev" class="csl-entry">
-Belzile, L., J. L. Wadsworth, P. J. Northrop, S. D. Grimshaw, and R. Huser. 2019. <em><span class="nocase">m</span>ev: Multivariate Extreme Value Distributions</em>. <a href="https://github.com/lbelzile/mev/">https://github.com/lbelzile/mev/</a>.
+Belzile, L., J. L. Wadsworth, P. J. Northrop, S. D. Grimshaw, and R.
+Huser. 2019. <em><span class="nocase">m</span>ev: Multivariate Extreme
+Value Distributions</em>. <a href="https://github.com/lbelzile/mev/">https://github.com/lbelzile/mev/</a>.
 </div>
 <div id="ref-CB2007" class="csl-entry">
-Chandler, R. E., and S. Bate. 2007. <span>“Inference for Clustered Data Using the Independence Loglikelihood.”</span> <em>Biometrika</em> 94 (1): 167–83. <a href="https://doi.org/10.1093/biomet/asm015">https://doi.org/10.1093/biomet/asm015</a>.
+Chandler, R. E., and S. Bate. 2007. <span>“Inference for Clustered Data
+Using the Independence Loglikelihood.”</span> <em>Biometrika</em> 94
+(1): 167–83. <a href="https://doi.org/10.1093/biomet/asm015">https://doi.org/10.1093/biomet/asm015</a>.
 </div>
 <div id="ref-extRemes" class="csl-entry">
-Gilleland, E., and R. W. Katz. 2016. <span>“<span class="nocase">extRemes</span> 2.0: An Extreme Value Analysis Package in <span>R</span>.”</span> <em>Journal of Statistical Software</em> 72 (8): 1–39. <a href="https://doi.org/10.18637/jss.v072.i08">https://doi.org/10.18637/jss.v072.i08</a>.
+Gilleland, E., and R. W. Katz. 2016. <span>“<span class="nocase">extRemes</span> 2.0: An Extreme Value Analysis Package in
+<span>R</span>.”</span> <em>Journal of Statistical Software</em> 72 (8):
+1–39. <a href="https://doi.org/10.18637/jss.v072.i08">https://doi.org/10.18637/jss.v072.i08</a>.
 </div>
 <div id="ref-ismev" class="csl-entry">
-Heffernan, J. E., and A. G. Stephenson. 2018. <em><span class="nocase">i</span>smev: An Introduction to Statistical Modeling of Extreme Values</em>. <a href="https://CRAN.R-project.org/package=ismev">https://CRAN.R-project.org/package=ismev</a>.
+Heffernan, J. E., and A. G. Stephenson. 2018. <em><span class="nocase">i</span>smev: An Introduction to Statistical Modeling of
+Extreme Values</em>. <a href="https://CRAN.R-project.org/package=ismev">https://CRAN.R-project.org/package=ismev</a>.
 </div>
 <div id="ref-evir" class="csl-entry">
-Pfaff, B., and A. McNeil. 2018. <em><span class="nocase">e</span>vir: Extreme Values in r</em>. <a href="https://CRAN.R-project.org/package=evir">https://CRAN.R-project.org/package=evir</a>.
+Pfaff, B., and A. McNeil. 2018. <em><span class="nocase">e</span>vir:
+Extreme Values in r</em>. <a href="https://CRAN.R-project.org/package=evir">https://CRAN.R-project.org/package=evir</a>.
 </div>
 <div id="ref-POT" class="csl-entry">
-Ribatet, M., and C. Dutang. 2016. <em>POT: Generalized Pareto Distribution and Peaks over Threshold</em>. <a href="https://CRAN.R-project.org/package=POT">https://CRAN.R-project.org/package=POT</a>.
+Ribatet, M., and C. Dutang. 2016. <em>POT: Generalized Pareto
+Distribution and Peaks over Threshold</em>. <a href="https://CRAN.R-project.org/package=POT">https://CRAN.R-project.org/package=POT</a>.
 </div>
 <div id="ref-texmex" class="csl-entry">
-Southworth, H., J. E. Heffernan, and P. D. Metcalfe. 2017. <em><span class="nocase">t</span>exmex: Statistical Modelling of Extreme Values</em>. <a href="https://CRAN.R-project.org/package=texmex">https://CRAN.R-project.org/package=texmex</a>.
+Southworth, H., J. E. Heffernan, and P. D. Metcalfe. 2017. <em><span class="nocase">t</span>exmex: Statistical Modelling of Extreme
+Values</em>. <a href="https://CRAN.R-project.org/package=texmex">https://CRAN.R-project.org/package=texmex</a>.
 </div>
 <div id="ref-evd" class="csl-entry">
-Stephenson, A. G. 2002. <span>“<span class="nocase">e</span>vd: Extreme Value Distributions.”</span> <em>R News</em> 2 (2): 0. <a href="https://CRAN.R-project.org/doc/Rnews/">https://CRAN.R-project.org/doc/Rnews/</a>.
+Stephenson, A. G. 2002. <span>“<span class="nocase">e</span>vd: Extreme
+Value Distributions.”</span> <em>R News</em> 2 (2): 0. <a href="https://CRAN.R-project.org/doc/Rnews/">https://CRAN.R-project.org/doc/Rnews/</a>.
 </div>
 <div id="ref-fExtremes" class="csl-entry">
-Wuertz, D., T. Setz, and Y. Yohan Chalabi. 2017. <em><span class="nocase">fExtremes</span>: Rmetrics - Modelling Extreme Events in Finance</em>. <a href="https://CRAN.R-project.org/package=fExtremes">https://CRAN.R-project.org/package=fExtremes</a>.
+Wuertz, D., T. Setz, and Y. Yohan Chalabi. 2017. <em><span class="nocase">fExtremes</span>: Rmetrics - Modelling Extreme Events in
+Finance</em>. <a href="https://CRAN.R-project.org/package=fExtremes">https://CRAN.R-project.org/package=fExtremes</a>.
 </div>
 </div>
 </div>

@@ -1,6 +1,6 @@
 #' Return Level Inferences for Stationary Extreme Value Models
 #'
-#' Calculates point estimates and confidence intervals for \code{m}-observation
+#' Calculates point estimates and confidence intervals for \code{m}-year
 #' return levels for \strong{stationary} extreme value fitted model objects
 #' returned from \code{\link{alogLik}}.  Two types of interval may be returned:
 #' (a) intervals based on approximate large-sample normality of the maximum
@@ -10,11 +10,11 @@
 #'
 #' @param x An object inheriting from class \code{"lax"} returned from
 #'   \code{\link{alogLik}}.
-#' @param m A numeric scalar.  The return period, in units of the number
-#'   of observations.  See \strong{Details} for information.
+#' @param m A numeric scalar.  The return period, in years.
 #' @param level A numeric scalar in (0, 1).  The confidence level required for
-#'   confidence interval for the \code{m}-observation return level.
-#' @param npy A numeric scalar.  The
+#'   confidence interval for the \code{m}-year return level.
+#' @param npy A numeric scalar.  The (mean) number of observations per year.
+#'   \strong{Setting this appropriately is important}. See \strong{Details}.
 #' @param prof A logical scalar.  Should we calculate intervals based on
 #'   profile loglikelihood?
 #' @param inc A numeric scalar. Only relevant if \code{prof = TRUE}. The
@@ -29,15 +29,33 @@
 #'   \strong{Value} in \code{\link[chandwich]{adjust_loglik}}.
 #' @details At present \code{return_level} only supports GEV models.
 #'
-#'   Care must be taken in specifying the input value of \code{m},
-#'   taking into account the parameterisation of the original fit.
+#'   \strong{Care must be taken in specifying the input value of \code{npy}.}
+#'   \itemize{
+#'     \item{\strong{GEV models}: }{it is common to have one observation per year,
+#'      either because the data are annual maxima or because for each year only
+#'      the maximum value over a particular season is extracted from the raw
+#'      data. In this case, \code{npy = 1}, which is the default.  If instead
+#'      we extract the maximum values over the first and second halves of each
+#'      year then \code{npy = 2}.}
+#'     \item{\strong{Binomial-GP models}: }{\code{npy} provides information
+#'      about the (intended) frequency of sampling in time, that is, the number
+#'      of observations that would be observed in a year if there are no
+#'      missing values.  If the number of observations may vary between years
+#'      then \code{npy} should be set equal to the mean number of observations
+#'      per year.}
+#'   }
+#'   \strong{Supplying \code{npy} for binomial-GP models.}
+#'   The value of \code{npy} (or an equivalent, perhaps differently named,
+#'   quantity) may have been set in the call to fit a GP model.
+#'   For example, the \code{gpd.fit()} function in the \code{ismev} package
+#'   has a \code{npy} argument and the value of \code{npy} is stored in the
+#'   fitted model object.  If \code{npy} is supplied by the user in the call to
+#'   \code{return_level} then this will be used in preference to the value
+#'   stored in the fitted model object.  If these two values differ then no
+#'   warning will be given.
 #'
-#'   For GEV models it is common for each observation to relate to a year.
-#'   In this event the \code{m}-observation return level is an \code{m}-year
-#'   return level.
-#'
-#'   For details about the definition and estimation of return levels see
-#'   Chapter 3 and 4 of Coles (2001).
+#'   For details of the definition and estimation of return levels see the
+#'   Inference for return levels vignette.
 #'
 #'   The profile likelihood-based intervals are calculated by
 #'   reparameterising in terms of the \code{m}-year return level and estimating
@@ -45,7 +63,7 @@
 #'   the critical value \code{logLik(x) - 0.5 * stats::qchisq(level, 1)}.
 #'   This is achieved by calculating the profile loglikelihood for a sequence
 #'   of values of this return level as governed by \code{inc}. Once the profile
-#'   loglikelhood drops below the critical value the lower and upper limits are
+#'   loglikelihood drops below the critical value the lower and upper limits are
 #'   estimated by interpolating linearly between the cases lying either side of
 #'   the critical value. The smaller \code{inc} the more accurate (but slower)
 #'   the calculation will be.
@@ -69,6 +87,8 @@
 #' @seealso \code{\link{plot.retlev}} for plotting the profile loglikelihood
 #'   for a return level.
 #' @examples
+#' # GEV model -----
+#'
 #' got_evd <- requireNamespace("evd", quietly = TRUE)
 #'
 #' if (got_evd) {
@@ -81,6 +101,7 @@
 #'   # Large inc set here for speed, sacrificing accuracy
 #'   rl <- return_level(adj_fgev, inc = 0.5)
 #'   summary(rl)
+#'   rl
 #'   plot(rl)
 #' }
 #'
@@ -94,7 +115,42 @@
 #'   # Large inc set here for speed, sacrificing accuracy
 #'   rl <- return_level(adj_gev_fit, inc = 0.05)
 #'   summary(rl)
+#'   rl
 #'   plot(rl)
+#' }
+#'
+#' # Binomial-GP model -----
+#'
+#' if (got_ismev) {
+#'   library(ismev)
+#'   data(rain)
+#'   # An example from the ismev::gpd.fit documentation
+#'   rain_fit <- gpd.fit(rain, 10, show = FALSE)
+#'   adj_rain_fit <- alogLik(rain_fit, binom = TRUE)
+#'   # Large inc set here for speed, sacrificing accuracy
+#'   rl <- return_level(adj_rain_fit, inc = 2.5)
+#'   summary(rl)
+#'   rl
+#'   plot(rl)
+#' }
+#'
+#' if (got_ismev) {
+#'   # Use Newlyn seas surges data from the exdex package
+#'   surges <- exdex::newlyn
+#'   u <- quantile(surges, probs = 0.9)
+#'   newlyn_fit <- gpd.fit(surges, u, show = FALSE)
+#'   # Create 5 clusters each corresponding approximately to 1 year of data
+#'   cluster <- rep(1:5, each = 579)[-1]
+#'   adj_newlyn_fit <- alogLik(newlyn_fit, cluster = cluster, binom = TRUE,
+#'                             cadjust = FALSE)
+#'   rl <- return_level(adj_newlyn_fit, inc = 0.02)
+#'   rl
+#'
+#'   # Add inference about the extremal index theta, using K = 1
+#'   adj_newlyn_theta <- alogLik(newlyn_fit, cluster = cluster, binom = TRUE,
+#'                               k = 1, cadjust = FALSE)
+#'   rl <- return_level(adj_newlyn_theta, inc = 0.02)
+#'   rl
 #' }
 #' @export
 return_level <- function(x, m = 100, level = 0.95, npy = 1, prof = TRUE,
@@ -108,10 +164,14 @@ return_level <- function(x, m = 100, level = 0.95, npy = 1, prof = TRUE,
   }
   Call <- match.call(expand.dots = TRUE)
   type <- match.arg(type)
+  # Check whether npy is supplied in the call to return_level
+  npy_given <- ifelse(missing(npy), FALSE, TRUE)
   if (inherits(x, "gev")) {
     temp <- return_level_gev(x, m, level, npy, prof, inc, type)
+  } else if (inherits(x, "bin-gpd")) {
+    temp <- return_level_bingp(x, m, level, npy, prof, inc, type, npy_given)
   } else {
-    stop("At present, this functionality is only available for GEV models")
+    stop("This functionality is only available for GEV and bin-GP models")
   }
   temp$m <- m
   temp$level <- level
@@ -199,7 +259,7 @@ plot.retlev <- function(x, y = NULL, level = NULL, legend = TRUE, digits = 3,
     y2 <- prof_loglik[loc+1]
     low_lim <- x1 + (crit_value - y1) * (x2 - x1) / (y2 - y1)
   }
-  my_xlab <- paste0(x$m, "-observation return level")
+  my_xlab <- paste0(x$m, "-year return level")
   my_ylab <- "profile loglikelihood"
   my_plot <- function(x, y, ..., xlab = my_xlab, ylab = my_ylab, type = "l") {
     graphics::plot(x, y, ..., xlab = xlab, ylab = ylab, type = type)
@@ -235,7 +295,7 @@ plot.retlev <- function(x, y = NULL, level = NULL, legend = TRUE, digits = 3,
 #' @param digits The argument \code{digits} to \code{\link{print.default}}.
 #' @param ... Additional arguments.  None are used in this function.
 #' @details Prints the call to \code{\link{return_level}} and the estimates
-#'   and 100\code{x$level}\% confidence limits for the \code{x$m}-observation
+#'   and 100\code{x$level}\% confidence limits for the \code{x$m}-year
 #'   return level.
 #' @return The argument \code{x}, invisibly, as for all
 #'   \code{\link[base]{print}} methods.
@@ -253,7 +313,7 @@ print.retlev <- function(x, digits = max(3L, getOption("digits") - 3L), ...) {
   cat("\nCall:\n", paste(deparse(x$call), sep = "\n", collapse = "\n"),
       "\n\n", sep = "")
   cat("MLE and ", 100 * x$level, "% confidence limits for the ", x$m,
-      "-observation return level\n\n", sep = "")
+      "-year return level\n\n", sep = "")
   cat("Normal interval:\n")
   print.default(format(x$rl_sym, digits = digits), print.gap = 2L,
                 quote = FALSE)

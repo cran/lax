@@ -48,13 +48,13 @@ detach("package:texmex")
 got_evd <- requireNamespace("evd", quietly = TRUE)
 
 ## ---- eval = got_evd----------------------------------------------------------
-library(evd, quietly = TRUE)
-fgev_fit <- fgev(ow$temp, nsloc = ow[, "loc"])
-adj_fgev_fit <- alogLik(fgev_fit, cluster = ow$year)
-summary(adj_fgev_fit)
+#  library(evd, quietly = TRUE)
+#  fgev_fit <- fgev(ow$temp, nsloc = ow[, "loc"])
+#  adj_fgev_fit <- alogLik(fgev_fit, cluster = ow$year)
+#  summary(adj_fgev_fit)
 
 ## ---- echo = FALSE, eval = got_evd--------------------------------------------
-detach("package:evd")
+#  detach("package:evd")
 
 ## ---- echo = FALSE, message = FALSE, warning = FALSE--------------------------
 got_extRemes <- requireNamespace("extRemes", quietly = TRUE)
@@ -88,37 +88,37 @@ detach("package:eva")
 got_evir <- requireNamespace("evir", quietly = TRUE)
 
 ## ---- eval = got_evir, message = FALSE----------------------------------------
-library(evir, quietly = TRUE)
-gev_fit <- gev(ow$temp)
-adj_gev_fit <- alogLik(gev_fit)
-summary(adj_gev_fit)
+#  library(evir, quietly = TRUE)
+#  gev_fit <- gev(ow$temp)
+#  adj_gev_fit <- alogLik(gev_fit)
+#  summary(adj_gev_fit)
 
 ## ---- echo = FALSE, eval = got_evir-------------------------------------------
-detach("package:evir")
+#  detach("package:evir")
 
 ## ---- echo = FALSE------------------------------------------------------------
 got_fExtremes <- requireNamespace("fExtremes", quietly = TRUE)
 
 ## ---- eval = got_fExtremes----------------------------------------------------
-library(fExtremes, quietly = TRUE)
-gevFit_fit <- gevFit(ow$temp)
-adj_gevFit_fit <- alogLik(gevFit_fit)
-summary(adj_gevFit_fit)
+#  library(fExtremes, quietly = TRUE)
+#  gevFit_fit <- gevFit(ow$temp)
+#  adj_gevFit_fit <- alogLik(gevFit_fit)
+#  summary(adj_gevFit_fit)
 
 ## ---- echo = FALSE, eval = got_fExtremes--------------------------------------
-detach("package:fExtremes")
+#  detach("package:fExtremes")
 
 ## ---- echo = FALSE, message = FALSE-------------------------------------------
 got_mev <- requireNamespace("mev", quietly = TRUE)
 
 ## ---- eval = got_mev----------------------------------------------------------
-library(mev, quietly = TRUE)
-gfit <- fit.gev(ow$temp)
-adj_gfit <- alogLik(gfit)
-summary(adj_gfit)
+#  library(mev, quietly = TRUE)
+#  gfit <- fit.gev(ow$temp)
+#  adj_gfit <- alogLik(gfit)
+#  summary(adj_gfit)
 
 ## ---- echo = FALSE, eval = got_mev--------------------------------------------
-detach("package:mev")
+#  detach("package:mev")
 
 ## ---- echo = FALSE, message = FALSE-------------------------------------------
 got_POT <- requireNamespace("POT", quietly = TRUE)

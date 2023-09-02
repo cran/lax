@@ -1,7 +1,7 @@
 Package: lax
 Title: Loglikelihood Adjustment for Extreme Value Models
-Version: 1.2.0
-Date: 2021-07-20
+Version: 1.2.1
+Date: 2023-09-02
 Authors@R: c(
     person(c("Paul", "J."), "Northrop", email = "p.northrop@ucl.ac.uk",
       role = c("aut", "cre", "cph")),
@@ -28,23 +28,24 @@ Description: Performs adjusted inferences based on model objects fitted, using
     parameters of the marginal distributions, or for performing inferences that 
     are robust to certain types of model misspecification.  Univariate extreme 
     value models, including regression models, are supported.  
-Imports: chandwich, graphics, numDeriv, revdbayes, sandwich, stats,
-        utils
+Imports: chandwich, exdex, graphics, numDeriv, revdbayes, sandwich,
+        stats, utils
 License: GPL (>= 2)
 LazyData: TRUE
 Encoding: UTF-8
 Depends: R (>= 3.3.0)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Suggests: distillery, eva, evd, evir, extRemes, fExtremes, ismev,
         knitr, mev, POT, rmarkdown, testthat, texmex
 VignetteBuilder: knitr
 URL: https://paulnorthrop.github.io/lax/,
         https://github.com/paulnorthrop/lax
 BugReports: https://github.com/paulnorthrop/lax/issues
+Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2021-07-20 01:29:49 UTC; paul
+Packaged: 2023-09-02 17:49:42 UTC; paul
 Author: Paul J. Northrop [aut, cre, cph],
   Camellia Yin [aut, cph]
 Maintainer: Paul J. Northrop <p.northrop@ucl.ac.uk>
 Repository: CRAN
-Date/Publication: 2021-07-20 05:00:02 UTC
+Date/Publication: 2023-09-02 18:10:02 UTC

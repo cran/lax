@@ -12,7 +12,15 @@
 
 \method{alogLik}{pp.fit}(x, cluster = NULL, use_vcov = TRUE, ...)
 
-\method{alogLik}{gpd.fit}(x, cluster = NULL, use_vcov = TRUE, ...)
+\method{alogLik}{gpd.fit}(
+  x,
+  cluster = NULL,
+  use_vcov = TRUE,
+  binom = FALSE,
+  k,
+  inc_cens = TRUE,
+  ...
+)
 
 \method{alogLik}{rlarg.fit}(x, cluster = NULL, use_vcov = TRUE, ...)
 }
@@ -21,12 +29,19 @@
 See \strong{Details}.}
 
 \item{cluster}{A vector or factor indicating from which cluster the
-respective loglikelihood contributions from \code{loglik} originate.
-This must have the same length as the vector returned by the
-\code{logLikVec} method for an object like \code{x}.
-If \code{cluster} is not supplied (i.e. is \code{NULL}) then it is
-assumed that each observation forms its own cluster.
-See \strong{Details}.}
+  respective log-likelihood contributions from \code{loglik} originate.
+  The length of \code{cluster} must be consistent with the \code{estfun}
+  method to be used in the estimation of the 'meat' \code{V} of the sandwich
+  estimator of the covariance matrix of the parameters to be passed to
+  \code{\link[chandwich]{adjust_loglik}}.  In most cases, \code{cluster}
+  must have length equal to the number of observations in data.  The
+  exception is the GP (only) model (\code{binom = FALSE}), where the
+  \code{cluster} may either contain a value for each observation in the raw
+  data, or for each threshold exceedance in the data.
+
+  If \code{cluster} is not supplied (is \code{NULL}) then it is
+  assumed that each observation forms its own cluster.
+  See \strong{Details} for further details.}
 
 \item{use_vcov}{A logical scalar.  Should we use the \code{vcov} S3 method
 for \code{x} (if this exists) to estimate the Hessian of the independence
@@ -40,10 +55,31 @@ Otherwise, \code{H} is estimated inside
 sandwich package \code{\link[sandwich]{meat}} (if \code{cluster = NULL}),
 or \code{\link[sandwich:vcovCL]{meatCL}} (if \code{cluster} is not
 \code{NULL}).}
+
+\item{binom}{A logical scalar.  This option is only relevant to
+\strong{GP models} and is only available in the \strong{stationary}
+(no covariates) case. If \code{binom = FALSE} then loglikelihood
+adjustment is only performed using the GP model. If \code{binom = TRUE}
+then loglikelihood adjustment is also performed for inferences about the
+probability of threshold exceedance, using a Bernoulli model for the
+instances of threshold exceedance.}
+
+\item{k}{A non-negative integer scalar.  This option is only relevant to
+\strong{GP models} and is only available in the \strong{stationary}
+(no covariates) case.  If \code{k} is supplied then it is passed as the
+run parameter \eqn{K} to \code{\link[exdex]{kgaps}} for making inferences
+about the extremal index \eqn{\theta} using the \eqn{K}-gaps model of
+Suveges and Davison (2010).}
+
+\item{inc_cens}{A logical scalar.  This argument is only relevant if
+\code{k} is supplied.  Passed to \code{\link[exdex]{kgaps}} to indicate
+whether or not to include censored inter-exceedance times, relating to
+the first and last observations.}
 }
 \value{
 An object inheriting from class \code{"chandwich"}.  See
   \code{\link[chandwich]{adjust_loglik}}.
+
   \code{class(x)} is a vector of length 5. The first 3 components are
   \code{c("lax", "chandwich", "ismev")}.
   The remaining 2 components depend on the model that was fitted.
@@ -129,6 +165,24 @@ if (got_ismev) {
   adj_reg_rain_fit <- alogLik(reg_rain_fit)
   summary(adj_reg_rain_fit)
   }
+  # Binomial-GP model -----
+
+  # Use Newlyn seas surges data from the exdex package
+  surges <- exdex::newlyn
+  u <- quantile(surges, probs = 0.9)
+  newlyn_fit <- gpd.fit(surges, u, show = FALSE)
+  # Create 5 clusters each corresponding approximately to 1 year of data
+  cluster <- rep(1:5, each = 579)[-1]
+  adj_newlyn_fit <- alogLik(newlyn_fit, cluster = cluster, binom = TRUE,
+                            cadjust = FALSE)
+  summary(adj_newlyn_fit)
+  summary(attr(adj_newlyn_fit, "pu_aloglik"))
+
+  # Add inference about the extremal index theta, using K = 1
+  adj_newlyn_theta <- alogLik(newlyn_fit, cluster = cluster, binom = TRUE,
+                              k = 1, cadjust = FALSE)
+  summary(attr(adj_newlyn_theta, "theta"))
+
   # PP model -----
 
   # An example from the ismev::pp.fit documentation
@@ -190,6 +244,11 @@ if (got_ismev) {
 Chandler, R. E. and Bate, S. (2007). Inference for clustered
   data using the independence loglikelihood. \emph{Biometrika},
   \strong{94}(1), 167-183. \doi{10.1093/biomet/asm015}
+
+Suveges, M. and Davison, A. C. (2010) Model
+  misspecification in peaks over threshold analysis, \emph{The Annals of
+  Applied Statistics}, \strong{4}(1), 203-221.
+  \doi{10.1214/09-AOAS292}
 
 Zeileis (2006) Object-Oriented Computation and Sandwich
   Estimators.  \emph{Journal of Statistical Software}, \strong{16}, 1-16.

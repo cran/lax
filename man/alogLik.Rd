@@ -4,19 +4,34 @@
 \alias{alogLik}
 \title{Loglikelihood adjustment for model fits}
 \usage{
-alogLik(x, cluster = NULL, use_vcov = TRUE, ...)
+alogLik(
+  x,
+  cluster = NULL,
+  use_vcov = TRUE,
+  binom = FALSE,
+  k,
+  inc_cens = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{A fitted model object with certain associated S3 methods.
 See \strong{Details}.}
 
 \item{cluster}{A vector or factor indicating from which cluster the
-respective loglikelihood contributions from \code{loglik} originate.
-This must have the same length as the vector returned by the
-\code{logLikVec} method for an object like \code{x}.
-If \code{cluster} is not supplied (i.e. is \code{NULL}) then it is
-assumed that each observation forms its own cluster.
-See \strong{Details}.}
+  respective log-likelihood contributions from \code{loglik} originate.
+  The length of \code{cluster} must be consistent with the \code{estfun}
+  method to be used in the estimation of the 'meat' \code{V} of the sandwich
+  estimator of the covariance matrix of the parameters to be passed to
+  \code{\link[chandwich]{adjust_loglik}}.  In most cases, \code{cluster}
+  must have length equal to the number of observations in data.  The
+  exception is the GP (only) model (\code{binom = FALSE}), where the
+  \code{cluster} may either contain a value for each observation in the raw
+  data, or for each threshold exceedance in the data.
+
+  If \code{cluster} is not supplied (is \code{NULL}) then it is
+  assumed that each observation forms its own cluster.
+  See \strong{Details} for further details.}
 
 \item{use_vcov}{A logical scalar.  Should we use the \code{vcov} S3 method
 for \code{x} (if this exists) to estimate the Hessian of the independence
@@ -26,6 +41,26 @@ Otherwise, \code{H} is estimated inside
 \code{\link[chandwich]{adjust_loglik}} using
 \code{\link[stats:optim]{optimHess}}.}
 
+\item{binom}{A logical scalar.  This option is only relevant to
+\strong{GP models} and is only available in the \strong{stationary}
+(no covariates) case. If \code{binom = FALSE} then loglikelihood
+adjustment is only performed using the GP model. If \code{binom = TRUE}
+then loglikelihood adjustment is also performed for inferences about the
+probability of threshold exceedance, using a Bernoulli model for the
+instances of threshold exceedance.}
+
+\item{k}{A non-negative integer scalar.  This option is only relevant to
+\strong{GP models} and is only available in the \strong{stationary}
+(no covariates) case.  If \code{k} is supplied then it is passed as the
+run parameter \eqn{K} to \code{\link[exdex]{kgaps}} for making inferences
+about the extremal index \eqn{\theta} using the \eqn{K}-gaps model of
+Suveges and Davison (2010).}
+
+\item{inc_cens}{A logical scalar.  This argument is only relevant if
+\code{k} is supplied.  Passed to \code{\link[exdex]{kgaps}} to indicate
+whether or not to include censored inter-exceedance times, relating to
+the first and last observations.}
+
 \item{...}{Further arguments to be passed to the functions in the
 sandwich package \code{\link[sandwich]{meat}} (if \code{cluster = NULL}),
 or \code{\link[sandwich:vcovCL]{meatCL}} (if \code{cluster} is not
@@ -34,6 +69,23 @@ or \code{\link[sandwich:vcovCL]{meatCL}} (if \code{cluster} is not
 \value{
 An object inheriting from class \code{"chandwich"}.  See
   \code{\link[chandwich]{adjust_loglik}}.
+
+  The original fitted model object is available as an attribute named
+  code{"original_fit"}, accessible using \code{attr(name, "original_fit")},
+  where \code{name} is the name of the object to which the object returned
+  from \code{alogLik} is assigned.
+
+  If \code{binom = TRUE} then the returned object has an extra attribute
+  named \code{pu_aloglik} that contains an object inheriting from class
+  \code{"chandwich"} relating specifically to inferences about the
+  probability of threshold exceedance. Also, the 4th component of the class
+  of the returned object becomes \code{"bin-gpd"}.
+
+  If \code{k} is supplied then the returned object has an extra attribute
+  named \code{theta} that contains an object inheriting from class
+  \code{c("kgaps", "exdex")} relating specifically to inferences about the
+  extremal index \eqn{\theta}.  See the \strong{Value} section in
+  \code{\link[exdex]{kgaps}}.
 
   If \code{x} is one of the supported models then the class of the returned
   object is a vector of length 5. The first 3 components are
@@ -89,7 +141,7 @@ Object \code{x} \emph{must} have the following S3
     \item{\code{vcov: }}{returns the estimated variance-covariance matrix of
       the (main) parameters of a fitted model, see
       \code{\link[stats]{vcov}};}
-    \item{\code{estfun: }}{returns an \eqn{n x k} matrix, in which each
+    \item{\code{estfun: }}{returns an \eqn{n} by \eqn{k} matrix, in which each
       column gives the derivative of the loglikelihood at each of \eqn{n}
       observation with respect to the \eqn{k} parameters of the model, see
       \code{\link[sandwich]{estfun}}.}
@@ -133,6 +185,11 @@ Chandler, R. E. and Bate, S. (2007). Inference for clustered
   data using the independence loglikelihood. \emph{Biometrika},
   \strong{94}(1), 167-183. \doi{10.1093/biomet/asm015}
 
+Suveges, M. and Davison, A. C. (2010) Model
+  misspecification in peaks over threshold analysis, \emph{The Annals of
+  Applied Statistics}, \strong{4}(1), 203-221.
+  \doi{10.1214/09-AOAS292}
+
 Zeileis (2006) Object-Oriented Computation and Sandwich
   Estimators.  \emph{Journal of Statistical Software}, \strong{16}, 1-16.
   \doi{10.18637/jss.v016.i09}
@@ -150,9 +207,8 @@ Zeileis (2006) Object-Oriented Computation and Sandwich
   \code{\link[chandwich]{conf_region}} for confidence regions for
   pairs of parameters.
 
-\code{\link[chandwich]{adjust_loglik}} in the
-  \code{\link[chandwich]{chandwich}} package to adjust a user-supplied
-  loglikelihood.
+\code{\link[chandwich]{adjust_loglik}} in the \code{chandwich}
+  package to adjust a user-supplied loglikelihood.
 
 \code{\link[sandwich]{meat}} and
   \code{\link[sandwich:vcovCL]{meatCL}} in the sandwich package.
