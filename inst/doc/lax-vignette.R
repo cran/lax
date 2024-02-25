@@ -33,16 +33,19 @@ anova(adj_large, adj_small, type = "none")
 
 ## ----echo = FALSE-------------------------------------------------------------
 got_texmex <- requireNamespace("texmex", quietly = TRUE)
+# 25/02/2024: avoid ERROR in texmex
+got_texmex <- FALSE
 
 ## ----eval = got_texmex--------------------------------------------------------
-library(texmex, quietly = TRUE)
-# Note: phi = log(scale)
-evm_fit <- evm(temp, ow, gev, mu = ~ loc, phi = ~ loc, xi = ~loc)
-adj_evm_fit <- alogLik(evm_fit, cluster = ow$year)
-summary(adj_evm_fit)
+#  # This code is not run, to avoid an error from evm(), so there are no results
+#  library(texmex, quietly = TRUE)
+#  # Note: phi = log(scale)
+#  evm_fit <- evm(temp, ow, gev, mu = ~ loc, phi = ~ loc, xi = ~loc)
+#  adj_evm_fit <- alogLik(evm_fit, cluster = ow$year)
+#  summary(adj_evm_fit)
 
 ## ----echo = FALSE, eval = got_texmex------------------------------------------
-detach("package:texmex")
+#  detach("package:texmex")
 
 ## ----echo = FALSE-------------------------------------------------------------
 got_evd <- requireNamespace("evd", quietly = TRUE)

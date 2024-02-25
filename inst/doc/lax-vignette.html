@@ -12,7 +12,7 @@
 
 <meta name="author" content="Paul Northrop" />
 
-<meta name="date" content="2023-12-02" />
+<meta name="date" content="2024-02-25" />
 
 <title>An overview of lax</title>
 
@@ -362,7 +362,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">An overview of lax</h1>
 <h4 class="author">Paul Northrop</h4>
-<h4 class="date">2023-12-02</h4>
+<h4 class="date">2024-02-25</h4>
 
 
 <div id="TOC">
@@ -548,18 +548,12 @@ the smaller model if we do not.</p>
 </div>
 <div id="texmex" class="section level2">
 <h2>texmex</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">library</span>(texmex, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"># Note: phi = log(scale)</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>evm_fit <span class="ot">&lt;-</span> <span class="fu">evm</span>(temp, ow, gev, <span class="at">mu =</span> <span class="sc">~</span> loc, <span class="at">phi =</span> <span class="sc">~</span> loc, <span class="at">xi =</span> <span class="sc">~</span>loc)</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>adj_evm_fit <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(evm_fit, <span class="at">cluster =</span> ow<span class="sc">$</span>year)</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="fu">summary</span>(adj_evm_fit)</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt;                       MLE      SE adj. SE</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; mu: (Intercept)  81.17000 0.32820 0.40620</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; mu: loc           2.66800 0.32820 0.21420</span></span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; phi: (Intercept)  1.30600 0.06091 0.06531</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; phi: loc          0.14330 0.06091 0.05106</span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; xi: (Intercept)  -0.19900 0.04937 0.03968</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; xi: loc          -0.08821 0.04937 0.03647</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># This code is not run, to avoid an error from evm(), so there are no results</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">library</span>(texmex, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co"># Note: phi = log(scale)</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>evm_fit <span class="ot">&lt;-</span> <span class="fu">evm</span>(temp, ow, gev, <span class="at">mu =</span> <span class="sc">~</span> loc, <span class="at">phi =</span> <span class="sc">~</span> loc, <span class="at">xi =</span> <span class="sc">~</span>loc)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>adj_evm_fit <span class="ot">&lt;-</span> <span class="fu">alogLik</span>(evm_fit, <span class="at">cluster =</span> ow<span class="sc">$</span>year)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="fu">summary</span>(adj_evm_fit)</span></code></pre></div>
 </div>
 <div id="evd" class="section level2">
 <h2>evd</h2>
